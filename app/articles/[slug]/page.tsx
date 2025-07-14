@@ -10,6 +10,8 @@ interface Props {
   params: { slug: string }
 }
 
+type PageProps = Props
+
 export default async function ArticlePage({ params }: Props) {
   const article = await client.fetch(articleBySlugQuery, { slug: params.slug })
 

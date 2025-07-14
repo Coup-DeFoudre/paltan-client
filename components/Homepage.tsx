@@ -1,8 +1,8 @@
 // components/HomePage.tsx
 'use client';
 
-import { useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Clock, TrendingUp } from 'lucide-react';
 import Carousel from './Carousel';
 
@@ -101,9 +101,11 @@ const HomePage: React.FC<HomePageProps> = ({
                   rel="noopener noreferrer"
                   className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
                 >
-                  <img
+                  <Image
                     src={ad.adImage?.asset?.url || 'https://via.placeholder.com/1200x400?text=Advertisement'}
                     alt={ad.title}
+                    width={1200}
+                    height={400}
                     className="w-full h-32 sm:h-48 object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute top-0 left-0 right-0 bottom-0 bg-gradient-to-r from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -141,9 +143,11 @@ const HomePage: React.FC<HomePageProps> = ({
               {trendingArticles.slice(0, 5).map((article) => (
                 <Link key={article._id} href={`/articles/${article.slug.current}`} className="block w-full h-full">
                   <article className="relative w-full h-full overflow-hidden">
-                    <img
+                    <Image
                       src={article.coverImage?.asset?.url || 'https://via.placeholder.com/800x450?text=No+Image'}
                       alt={article.title}
+                      width={800}
+                      height={450}
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
@@ -187,9 +191,11 @@ const HomePage: React.FC<HomePageProps> = ({
                   rel="noopener noreferrer"
                   className="group relative overflow-hidden rounded-xl shadow-md hover:shadow-xl transition-all duration-300"
                 >
-                  <img
+                  <Image
                     src={ad.adImage?.asset?.url || 'https://via.placeholder.com/600x300?text=Advertisement'}
                     alt={ad.title}
+                    width={600}
+                    height={300}
                     className="w-full h-28 sm:h-36 object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute top-0 left-0 right-0 bottom-0 bg-gradient-to-r from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -219,9 +225,11 @@ const HomePage: React.FC<HomePageProps> = ({
               <Link key={article._id} href={`/articles/${article.slug.current}`} className="block h-full">
                 <article className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden h-full flex flex-col">
                   <div className="relative">
-                    <img
+                    <Image
                       src={article.coverImage?.asset?.url || 'https://via.placeholder.com/800x450?text=No+Image'}
                       alt={article.title}
+                      width={800}
+                      height={450}
                       className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
@@ -261,9 +269,11 @@ const HomePage: React.FC<HomePageProps> = ({
                   rel="noopener noreferrer"
                   className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100"
                 >
-                  <img
+                  <Image
                     src={ad.adImage?.asset?.url || 'https://via.placeholder.com/1200x200?text=Advertisement'}
                     alt={ad.title}
+                    width={1200}
+                    height={200}
                     className="w-full h-24 sm:h-32 object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute top-0 left-0 right-0 bottom-0 bg-gradient-to-r from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

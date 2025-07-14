@@ -47,7 +47,7 @@ const Carousel = ({
 
     const interval = setInterval(nextSlide, autoplayDelay);
     return () => clearInterval(interval);
-  }, [autoplay, autoplayDelay, pauseOnHover, isHovered, currentIndex, itemCount]);
+  }, [autoplay, autoplayDelay, pauseOnHover, isHovered, currentIndex, itemCount, nextSlide]);
 
   if (itemCount === 0) {
     return null;

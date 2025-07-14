@@ -3,12 +3,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { 
-  Award, 
-  Users, 
-  Target, 
-  Newspaper,
   Globe,
-  BarChart
+  BarChart,
+  Target 
 } from 'lucide-react';
 
 const fadeInUp = {

@@ -99,12 +99,17 @@ function DockItem({
         {Children.map(children, (child) => {
           if (!React.isValidElement(child)) return child;
 
-          const type = child.type as any;
+          const type = child.type as React.ComponentType<{
+            isHovered?: MotionValue<number>;
+          }>;
           const isDockComponent =
-            type?.name === "DockLabel" || type?.name === "DockIcon";
+            type?.displayName === "DockLabel" || type?.displayName === "DockIcon";
 
           return isDockComponent
-            ? cloneElement(child as React.ReactElement<{ isHovered?: MotionValue<number> }>, { isHovered })
+            ? cloneElement(
+                child as React.ReactElement<{ isHovered?: MotionValue<number> }>,
+                { isHovered }
+              )
             : child;
         })}
       </motion.div>
@@ -179,7 +184,7 @@ export default function Dock({
 
   const maxHeight = useMemo(
     () => Math.max(dockHeight, magnification + magnification / 2 + 4),
-    [magnification]
+    [magnification, dockHeight]
   );
   const heightRow = useTransform(isHovered, [0, 1], [panelHeight, maxHeight]);
   const height = useSpring(heightRow, spring);
