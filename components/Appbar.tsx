@@ -1,6 +1,6 @@
 "use client"
 import React, { useState } from 'react';
-import { Home, Play, FileText, Info, Phone, Menu, X } from 'lucide-react';
+import { Home, Play, FileText, Info, Phone, Menu, X, Rss } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -21,8 +21,12 @@ const AppBar: React.FC = () => {
     { id: 'videos', label: 'Videos', icon: Play, href: '/videos' },
     { id: 'pdfs', label: 'Weekly PDFs', icon: FileText, href: '/weekly-pdf' },
     { id: 'about', label: 'About Us', icon: Info, href: '/about' },
-    { id: 'contact', label: 'Contact Us', icon: Phone, href: '/contact' }
+    { id: 'contact', label: 'Contact Us', icon: Phone, href: '/contact' },
+    { id: 'rss', label: 'RSS Feed', icon: Rss, href: '/rss-feed' }
   ];
+  
+  // Bottom navigation items exclude the RSS Feed option
+  const bottomNavItems = navItems.filter(item => item.id !== 'rss');
   
 
  
@@ -68,7 +72,7 @@ const AppBar: React.FC = () => {
       {/* Mobile Navigation - Bottom */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg">
         <div className="flex items-center justify-around px-2 py-2">
-          {navItems.map((item) => {
+          {bottomNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
             return (
@@ -94,12 +98,20 @@ const AppBar: React.FC = () => {
       <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
         <div className="flex items-center justify-between px-4 h-14">
           <h1 className="text-xl font-bold text-gray-900">The Paltan</h1>
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-          >
-            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          <div className="flex items-center space-x-2">
+            <Link 
+              href="/rss-feed"
+              className="p-2 rounded-md text-blue-600 hover:text-blue-800 hover:bg-blue-50 transition-colors"
+            >
+              <Rss size={20} />
+            </Link>
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+            >
+              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Dropdown Menu */}

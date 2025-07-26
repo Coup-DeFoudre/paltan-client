@@ -20,8 +20,9 @@ interface Ad {
   title: string;
   adImage?: { asset: { url: string } };
   link: string;
-  placement: string;
-  showOnHome: boolean;
+  placements: string[];
+  startDate: string;
+  duration: string;
 }
 
 interface Notice {
@@ -43,9 +44,9 @@ const HomePage: React.FC<HomePageProps> = ({
   ads 
 }) => {
   // Filter ads for different placements
-  const homeBannerAds = ads.filter(ad => ad.showOnHome && ad.placement === 'home-top');
-  const middleAds = ads.filter(ad => ad.showOnHome && ad.placement === 'home-middle');
-  const bottomAds = ads.filter(ad => ad.showOnHome && ad.placement === 'home-bottom');
+  const homeBannerAds = ads.filter(ad => ad.placements.includes('home-top'));
+  const middleAds = ads.filter(ad => ad.placements.includes('home-mid'));
+  const footerAds = ads.filter(ad => ad.placements.includes('home-footer'));
 
   const formatTimeAgo = (dateString: string) => {
     if (!dateString) return 'अभी';
@@ -66,7 +67,7 @@ const HomePage: React.FC<HomePageProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans">
+    <div className="min-h-screen bg-gray-50 font-sans pb-20 lg:pb-0">
       {/* Notice Bar */}
       {notices.length > 0 && (
         <div className="bg-slate-800 text-white py-3 shadow-md border-b border-slate-700">
@@ -257,11 +258,11 @@ const HomePage: React.FC<HomePageProps> = ({
           </div>
         </section>
 
-        {/* Bottom Ads */}
-        {bottomAds.length > 0 && (
+        {/* Footer Ads */}
+        {footerAds.length > 0 && (
           <section className="mb-10">
             <div className="grid gap-4">
-              {bottomAds.map((ad: Ad) => (
+              {footerAds.map((ad: Ad) => (
                 <a
                   key={ad._id}
                   href={ad.link}

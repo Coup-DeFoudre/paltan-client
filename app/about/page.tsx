@@ -8,12 +8,6 @@ import {
   Target 
 } from 'lucide-react';
 
-const fadeInUp = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5 }
-};
-
 const scaleIn = {
   initial: { opacity: 0, scale: 0.8 },
   animate: { opacity: 1, scale: 1 },
@@ -70,7 +64,7 @@ const AboutPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pb-20 lg:pb-0">
       {/* Hero Section */}
       <section className="relative bg-red-600 text-white py-24 overflow-hidden">
         <motion.div 

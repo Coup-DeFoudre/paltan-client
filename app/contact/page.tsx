@@ -6,7 +6,7 @@ import { MapPin, Mail, Phone } from 'lucide-react';
 
 const ContactPage = () => {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pb-20 lg:pb-0">
       {/* Hero Section */}
       <section className="relative bg-red-600 text-white py-20 overflow-hidden">
         <motion.div 

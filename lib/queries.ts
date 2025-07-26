@@ -14,6 +14,7 @@ export const allArticlesQuery = `
     body
   }
 `;
+
 export const trendingArticlesQuery = `
   *[_type == "article" && isTrending == true] | order(publishedAt desc) {
     _id,
@@ -25,56 +26,75 @@ export const trendingArticlesQuery = `
       }
     }
   }
-`
-
+`;
 
 export const activeNoticesQuery = `
   *[_type == "notice" && isActive == true] | order(order asc) {
     _id,
     message
   }
-`
+`;
 
 export const activeAdsQuery = `
-  *[_type == "advertisement" && defined(placement) && startDate <= now()] {
+  *[
+    _type == "advertisement" && 
+    defined(placements) && 
+    count(placements) > 0 &&
+    startDate <= now() &&
+    (
+      (duration == "1d" && dateTime(startDate) >= dateTime(now()) - 60*60*24) ||
+      (duration == "15d" && dateTime(startDate) >= dateTime(now()) - 60*60*24*15) ||
+      (duration == "30d" && dateTime(startDate) >= dateTime(now()) - 60*60*24*30)
+    )
+  ] {
     _id,
     title,
-    adImage{ asset->{
+    adImage {
+      asset-> {
         url
-      }},
+      }
+    },
     link,
-    placement,
-    showOnHome,
-    showOnArticlePage,
-    duration,
-    startDate
+    placements,
+    startDate,
+    duration
   }
-`
+`;
 
 export const allVideosQuery = `
-  *[_type == "video"] | order(publishedAt desc) {
+  *[_type == "video" && isActive == true] | order(publishedAt desc) {
     _id,
     title,
     description,
+    thumbnail {
+      asset-> {
+        url
+      }
+    },
     thumbnailUrl,
     embedUrl,
     category,
     publishedAt,
     views
   }
-`
+`;
 
 export const newspaperEditionsQuery = `
-  *[_type == "edition"] | order(publishedAt desc) {
+  *[_type == "edition" && defined(pdfFile)] | order(publishedAt desc) {
     _id,
     title,
     publishedAt,
     description,
+    isActive,
     "pdfUrl": pdfFile.asset->url,
     "fileName": pdfFile.asset->originalFilename,
-    "fileSize": pdfFile.asset->size
+    "fileSize": pdfFile.asset->size,
+    "mimeType": pdfFile.asset->mimeType,
+    category,
+    "slug": slug.current
   }
-`
+`;
+
 export const articleBySlugQuery = `
   *[_type == "article" && slug.current == $slug][0]{
     _id,
@@ -88,6 +108,4 @@ export const articleBySlugQuery = `
     category,
     isTrending
   }
-`
-
-
+`;

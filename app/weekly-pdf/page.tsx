@@ -2,9 +2,10 @@
 
 import React from 'react';
 import { client } from '@/lib/sanity';
-import { newspaperEditionsQuery } from '@/lib/queries';
+import { newspaperEditionsQuery, activeAdsQuery } from '@/lib/queries';
 import { motion } from 'framer-motion';
 import { FileDown, Calendar, FileText, AlertTriangle } from 'lucide-react';
+import Image from 'next/image';
 
 // TypeScript interface for PDF edition
 interface Edition {
@@ -12,57 +13,26 @@ interface Edition {
   title: string;
   publishedAt: string;
   description: string | null;
-  pdfFile: {
-    asset: {
-      url: string;
-      originalFilename: string;
-      size: number; // in bytes
-    };
-  };
+  category: string;
+  isActive: boolean;
+  pdfUrl: string;
+  fileName: string;
+  fileSize: number;
+  mimeType: string;
+  slug: string;
 }
 
-// Sample data for development - replace with actual data from Sanity
-const sampleEditions: Edition[] = [
-  {
-    _id: 'edition1',
-    title: 'पलटन साप्ताहिक - जुलाई दूसरा सप्ताह',
-    publishedAt: '2025-07-14T10:00:00.000Z',
-    description: 'इस सप्ताह के अंक में बिहार की प्रमुख खबरें, विशेष रिपोर्ट और विश्लेषण',
-    pdfFile: {
-      asset: {
-        url: 'https://example.com/sample.pdf',
-        originalFilename: 'paltan-weekly-14-july-2025.pdf',
-        size: 2457600 // 2.4 MB
-      }
-    }
-  },
-  {
-    _id: 'edition2',
-    title: 'पलटन साप्ताहिक - जुलाई पहला सप्ताह',
-    publishedAt: '2025-07-07T10:00:00.000Z',
-    description: 'बिहार में मानसून की स्थिति और किसानों की तैयारी पर विशेष रिपोर्ट',
-    pdfFile: {
-      asset: {
-        url: 'https://example.com/sample2.pdf',
-        originalFilename: 'paltan-weekly-07-july-2025.pdf',
-        size: 3145728 // 3 MB
-      }
-    }
-  },
-  {
-    _id: 'edition3',
-    title: 'पलटन साप्ताहिक - जून अंतिम सप्ताह',
-    publishedAt: '2025-06-30T10:00:00.000Z',
-    description: 'शिक्षा व्यवस्था में सुधार और नई नीतियों पर विस्तृत रिपोर्ट',
-    pdfFile: {
-      asset: {
-        url: 'https://example.com/sample3.pdf',
-        originalFilename: 'paltan-weekly-30-june-2025.pdf',
-        size: 2097152 // 2 MB
-      }
-    }
-  }
-];
+interface Ad {
+  _id: string;
+  title: string;
+  adImage: {
+    asset: {
+      url: string;
+    };
+  };
+  link?: string;
+  placements: string[];
+}
 
 function formatDate(dateString: string): string {
   return new Date(dateString).toLocaleDateString('hi-IN', {
@@ -78,33 +48,82 @@ function formatFileSize(bytes: number): string {
 }
 
 export default function WeeklyPDFPage() {
-  const [editions] = React.useState<Edition[]>(sampleEditions);
-  const [loading, setLoading] = React.useState<boolean>(false);
+  const [editions, setEditions] = React.useState<Edition[]>([]);
+  const [ads, setAds] = React.useState<Ad[]>([]);
+  const [loading, setLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<string | null>(null);
+
+  // Fetch editions and ads from Sanity
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        
+        // Fetch both editions and ads in parallel
+        const [fetchedEditions, fetchedAds] = await Promise.all([
+          client.fetch(newspaperEditionsQuery),
+          client.fetch(activeAdsQuery)
+        ]);
+
+        // Filter ads for weekly-banner placement
+        const weeklyAds = fetchedAds.filter((ad: Ad) => 
+          ad.placements.includes('weekly-banner') || ad.placements.includes('weekly-pdf')
+        );
+        
+        setEditions(fetchedEditions);
+        setAds(weeklyAds);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError('डेटा लोड करने में समस्या हुई है। कृपया बाद में पुनः प्रयास करें।');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // Function to handle PDF download
   const handleDownload = async (edition: Edition) => {
     try {
       setLoading(true);
-      const response = await fetch(edition.pdfFile.asset.url);
-      if (!response.ok) throw new Error('PDF डाउनलोड नहीं हो सका');
+      const response = await fetch(edition.pdfUrl);
+      if (!response.ok) {
+        throw new Error(`PDF डाउनलोड नहीं हो सका (${response.status})`);
+      }
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = edition.pdfFile.asset.originalFilename;
+      link.download = edition.fileName;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (err) {
-      setError('PDF डाउनलोड करने में समस्या हुई। कृपया बाद में पुनः प्रयास करें।');
+      setError(`PDF डाउनलोड करने में समस्या हुई (${(err as Error).message})`);
     } finally {
       setLoading(false);
     }
   };
 
-  if (!editions.length) {
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8 pb-20 lg:pb-10">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">संस्करण लोड हो रहे हैं...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!editions || editions.length === 0) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
         <AlertTriangle className="w-16 h-16 text-yellow-500 mb-4" />
@@ -115,8 +134,59 @@ export default function WeeklyPDFPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8 pb-20 lg:pb-10">
       <div className="max-w-5xl mx-auto">
+        {/* Advertisement Banner */}
+        {ads.length > 0 && (
+          <section className="mb-8">
+            <div className="grid gap-4">
+              {ads.map((ad) => (
+                <div key={ad._id} className="relative">
+                  {ad.link ? (
+                    <a
+                      href={ad.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 block"
+                    >
+                      <Image
+                        src={ad.adImage.asset.url}
+                        alt={ad.title || 'Advertisement'}
+                        width={1200}
+                        height={400}
+                        className="w-full h-32 sm:h-48 object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute top-0 left-0 right-0 bottom-0 bg-gradient-to-r from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <div className="absolute top-2 left-2 bg-blue-600 text-white px-2 py-1 rounded text-xs font-semibold shadow-md">
+                        विज्ञापन
+                      </div>
+                      <div className="absolute bottom-2 right-2 bg-black/70 text-white px-3 py-1.5 rounded-full text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-sm">
+                        {ad.title}
+                      </div>
+                    </a>
+                  ) : (
+                    <div className="relative overflow-hidden rounded-xl shadow-lg">
+                      <Image
+                        src={ad.adImage.asset.url}
+                        alt={ad.title || 'Advertisement'}
+                        width={1200}
+                        height={400}
+                        className="w-full h-32 sm:h-48 object-cover"
+                      />
+                      <div className="absolute top-2 left-2 bg-blue-600 text-white px-2 py-1 rounded text-xs font-semibold shadow-md">
+                        विज्ञापन
+                      </div>
+                      <div className="absolute bottom-2 right-2 bg-black/70 text-white px-3 py-1.5 rounded-full text-xs font-medium">
+                        {ad.title}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
         <motion.h1
           className="text-3xl sm:text-4xl font-bold text-gray-900 mb-8 text-center"
           initial={{ opacity: 0, y: -20 }}
@@ -157,7 +227,7 @@ export default function WeeklyPDFPage() {
                       </span>
                       <span className="flex items-center gap-1">
                         <FileText className="w-4 h-4" />
-                        {formatFileSize(edition.pdfFile.asset.size)}
+                        {formatFileSize(edition.fileSize)}
                       </span>
                     </div>
                     {edition.description && (

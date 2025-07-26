@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, ReactNode } from 'react';
+import { useState, useEffect, useCallback, ReactNode } from 'react';
 import * as React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -33,13 +33,13 @@ const Carousel = ({
   const itemCount = items.length;
 
   // Navigation functions
-  const nextSlide = () => {
+  const nextSlide = useCallback(() => {
     setCurrentIndex((prev) => (loop ? (prev + 1) % itemCount : Math.min(prev + 1, itemCount - 1)));
-  };
+  }, [loop, itemCount]);
 
-  const prevSlide = () => {
+  const prevSlide = useCallback(() => {
     setCurrentIndex((prev) => (loop ? (prev - 1 + itemCount) % itemCount : Math.max(prev - 1, 0)));
-  };
+  }, [loop, itemCount]);
 
   // Autoplay effect
   useEffect(() => {

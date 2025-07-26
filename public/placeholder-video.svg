@@ -1,0 +1,5 @@
+<!-- A simple SVG placeholder for videos -->
+<svg width="144" height="80" viewBox="0 0 144 80" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100%" height="100%" fill="#f3f4f6"/>
+  <path d="M72 30a10 10 0 0 1 0 20 10 10 0 0 1 0-20m0-2a12 12 0 1 0 0 24 12 12 0 0 0 0-24zm-2.5 8.5l7 4-7 4v-8z" fill="#9ca3af"/>
+</svg>

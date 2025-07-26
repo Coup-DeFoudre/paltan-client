@@ -1,86 +1,27 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
+import { client } from '@/lib/sanity';
+import { allVideosQuery } from '@/lib/queries';
 
 // TypeScript interfaces for type safety
 interface Video {
-  id: string;
+  _id: string;
   title: string;
   description: string;
-  thumbnailUrl: string;
+  thumbnail?: {
+    asset: {
+      url: string;
+    };
+  };
+  thumbnailUrl?: string;
   embedUrl: string;
   category: string;
   publishedAt: string;
-  views: number;
+  views?: number;
 }
-
-// Sample video data - you can replace this with data from your backend
-const sampleVideos: Video[] = [
-  {
-    id: "video1",
-    title: "बिहार का अपना खबरी चैनल | पलटन न्यूज़",
-    description: "बिहार और भारत के अन्य राज्यों से महत्वपूर्ण समाचार और अपडेट",
-    thumbnailUrl: "https://via.placeholder.com/320x180?text=Paltan+News+1",
-    embedUrl: "https://www.youtube.com/embed/nxnbZxb2TQw",
-    category: "news",
-    publishedAt: "2025-07-12T10:30:00",
-    views: 1245
-  },
-  {
-    id: "video2",
-    title: "बिहार में बाढ़ की स्थिति पर विशेष रिपोर्ट",
-    description: "बिहार के उत्तरी जिलों में बाढ़ की स्थिति का विस्तृत विश्लेषण",
-    thumbnailUrl: "https://via.placeholder.com/320x180?text=Flood+Report",
-    embedUrl: "https://www.youtube.com/embed/Smno_VJtV6Q",
-    category: "report",
-    publishedAt: "2025-07-10T14:15:00",
-    views: 2890
-  },
-  {
-    id: "video3",
-    title: "पटना में नए स्टार्टअप्स का उदय",
-    description: "पटना में हाल ही में शुरू हुए स्टार्टअप और उनके बारे में विशेष जानकारी",
-    thumbnailUrl: "https://via.placeholder.com/320x180?text=Startup+Report",
-    embedUrl: "https://www.youtube.com/embed/ZMsDib3wfuY",
-    category: "business",
-    publishedAt: "2025-07-08T09:45:00",
-    views: 1589
-  },
-  {
-    id: "video4",
-    title: "बिहार की संस्कृति और परंपरा",
-    description: "बिहार की समृद्ध सांस्कृतिक विरासत पर विशेष डॉक्युमेंट्री",
-    thumbnailUrl: "https://via.placeholder.com/320x180?text=Bihar+Culture",
-    embedUrl: "https://www.youtube.com/embed/j7Pb5DEbJGY",
-    category: "culture",
-    publishedAt: "2025-07-05T16:20:00",
-    views: 3245
-  },
-  {
-    id: "video5",
-    title: "मधुबनी पेंटिंग: कला का एक अनूठा रूप",
-    description: "बिहार की प्रसिद्ध मधुबनी पेंटिंग की कला और इतिहास",
-    thumbnailUrl: "https://via.placeholder.com/320x180?text=Madhubani+Art",
-    embedUrl: "https://www.youtube.com/embed/D6g_jsm_zYY",
-    category: "culture",
-    publishedAt: "2025-07-02T11:10:00",
-    views: 2156
-  },
-  {
-    id: "video6",
-    title: "बिहार विधानसभा: विशेष रिपोर्ट",
-    description: "बिहार विधानसभा के हालिया सत्र की विस्तृत रिपोर्ट",
-    thumbnailUrl: "https://via.placeholder.com/320x180?text=Assembly+Report",
-    embedUrl: "https://www.youtube.com/embed/jOyQSLPZjqI",
-    category: "politics",
-    publishedAt: "2025-06-30T13:40:00",
-    views: 4578
-  }
-];
-
-// Categories for filtering
-const categories = ["all", ...Array.from(new Set(sampleVideos.map(video => video.category)))];
 
 // Format date function
 const formatDate = (dateString: string): string => {
@@ -93,7 +34,7 @@ const formatDate = (dateString: string): string => {
 };
 
 // Format view count
-const formatViews = (count: number): string => {
+const formatViews = (count: number = 0): string => {
   if (count >= 1000000) {
     return `${(count / 1000000).toFixed(1)}M देखा गया`;
   } else if (count >= 1000) {
@@ -103,17 +44,138 @@ const formatViews = (count: number): string => {
   }
 };
 
+// Format YouTube URL for embedding
+const getEmbedUrl = (url: string): string => {
+  try {
+    const videoId = url.includes('youtube.com') 
+      ? new URL(url).searchParams.get('v')
+      : url.includes('youtu.be')
+        ? new URL(url).pathname.slice(1)
+        : url;
+    return `https://www.youtube-nocookie.com/embed/${videoId}`;
+  } catch {
+    return url;
+  }
+};
+
 const VideoPage = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [selectedVideo, setSelectedVideo] = useState<Video | null>(sampleVideos[0]);
+  const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
+  const [videos, setVideos] = useState<Video[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch videos from Sanity
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        console.log('Starting to fetch videos...');
+        setLoading(true);
+        
+        // Using the same approach as we did with editions
+        const fetchedVideos = await client.fetch(allVideosQuery);
+        console.log('Raw response from Sanity:', fetchedVideos);
+        
+        if (!Array.isArray(fetchedVideos)) {
+          console.error('Unexpected response format:', fetchedVideos);
+          throw new Error('Unexpected response format from Sanity');
+        }
+        
+        if (fetchedVideos.length === 0) {
+          console.log('No videos found in response');
+        } else {
+          console.log('First video details:', {
+            title: fetchedVideos[0].title,
+            embedUrl: fetchedVideos[0].embedUrl,
+          });
+        }
+        
+        setVideos(fetchedVideos);
+        if (fetchedVideos.length > 0) {
+          setSelectedVideo(fetchedVideos[0]);
+        }
+        setError(null);
+        console.log('Successfully set videos, count:', fetchedVideos.length);
+      } catch (err) {
+        console.error('Error fetching videos:', err);
+        setError('वीडियो लोड करने में समस्या हुई है। कृपया बाद में पुनः प्रयास करें।');
+      } finally {
+        console.log('Setting loading to false');
+        setLoading(false);
+      }
+    };
+
+    fetchVideos();
+  }, []);
+
+  // Categories for filtering
+  const categories = ["all", ...Array.from(new Set(videos.map(video => video.category)))];
   
   // Filter videos based on selected category
   const filteredVideos = selectedCategory === "all" 
-    ? sampleVideos 
-    : sampleVideos.filter(video => video.category === selectedCategory);
+    ? videos 
+    : videos.filter(video => video.category === selectedCategory);
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8 pb-20 lg:pb-10">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">वीडियो लोड हो रहे हैं...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8 pb-20 lg:pb-10">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div className="text-red-600 text-6xl mb-4">⚠️</div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">समस्या आई है</h2>
+              <p className="text-gray-600">{error}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // No videos state
+  if (videos.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8 pb-20 lg:pb-10">
+        <div className="max-w-7xl mx-auto">
+          <motion.h1 
+            className="text-3xl sm:text-4xl font-bold text-gray-900 mb-8 text-center"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            पलटन वीडियो गैलरी
+          </motion.h1>
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div className="text-gray-400 text-6xl mb-4">🎥</div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">कोई वीडियो उपलब्ध नहीं</h2>
+              <p className="text-gray-600">अभी तक कोई वीडियो अपलोड नहीं किया गया है।</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8 pb-20 lg:pb-10">
       <div className="max-w-7xl mx-auto">
         <motion.h1 
           className="text-3xl sm:text-4xl font-bold text-gray-900 mb-8 text-center"
@@ -165,7 +227,7 @@ const VideoPage = () => {
               <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                 <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
                   <iframe
-                    src={selectedVideo.embedUrl}
+                    src={getEmbedUrl(selectedVideo.embedUrl)}
                     title={selectedVideo.title}
                     allowFullScreen
                     className="absolute inset-0 w-full h-full"
@@ -203,9 +265,9 @@ const VideoPage = () => {
               <div className="space-y-4">
                 {filteredVideos.map((video) => (
                   <motion.div
-                    key={video.id}
+                    key={video._id}
                     className={`cursor-pointer rounded-lg overflow-hidden group ${
-                      selectedVideo?.id === video.id ? 'ring-2 ring-red-600' : ''
+                      selectedVideo?._id === video._id ? 'ring-2 ring-red-600' : ''
                     }`}
                     onClick={() => setSelectedVideo(video)}
                     whileHover={{ scale: 1.02 }}
@@ -213,13 +275,19 @@ const VideoPage = () => {
                   >
                     <div className="flex items-center space-x-3">
                       <div className="relative flex-shrink-0">
-                        <img
-                          src={video.thumbnailUrl}
+                        <Image
+                          src={video.thumbnail?.asset?.url || video.thumbnailUrl || '/placeholder-video.svg'}
                           alt={video.title}
-                          className="h-20 w-36 object-cover rounded"
+                          width={144}
+                          height={80}
+                          className={`h-20 w-36 object-cover rounded ${!video.thumbnail?.asset?.url && !video.thumbnailUrl ? 'p-2 bg-gray-50' : ''}`}
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = '/placeholder-video.svg';
+                          }}
                         />
                         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity"></div>
-                        {selectedVideo?.id === video.id && (
+                        {selectedVideo?._id === video._id && (
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="bg-red-600 rounded-full p-1">
                               <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -231,7 +299,7 @@ const VideoPage = () => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className={`text-sm font-medium line-clamp-2 ${
-                          selectedVideo?.id === video.id ? 'text-red-600' : 'text-gray-900'
+                          selectedVideo?._id === video._id ? 'text-red-600' : 'text-gray-900'
                         }`}>
                           {video.title}
                         </p>
