@@ -29,9 +29,13 @@ export interface RSSFeed {
 
 export async function fetchRSSFeed(url: string): Promise<RSSFeed> {
   try {
+    // Add a cache-busting parameter to ensure fresh data
+    const cacheBustUrl = url.includes('?') ? `${url}&t=${Date.now()}` : `${url}?t=${Date.now()}`;
+    
     // Fetch the RSS feed XML
-    const response = await fetch(url, { 
-      next: { revalidate: 3600 } // Revalidate every hour (3600 seconds)
+    const response = await fetch(cacheBustUrl, { 
+      next: { revalidate: 60 }, // Revalidate every minute (60 seconds) for fresh content
+      cache: 'no-store' // Force fresh fetch
     });
     
     if (!response.ok) {
