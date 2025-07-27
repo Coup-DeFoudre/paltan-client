@@ -1,0 +1,16 @@
+import { client } from '@/lib/sanity';
+import { allVideosQuery } from '@/lib/queries';
+import VideoPageClient from './VideoPageClient';
+
+// Server-side data fetching
+export default async function VideosPage() {
+  try {
+    const videos = await client.fetch(allVideosQuery);
+    console.log('Server-side video fetch successful, count:', videos.length);
+    
+    return <VideoPageClient initialVideos={videos} />;
+  } catch (error) {
+    console.error('Server-side video fetch error:', error);
+    return <VideoPageClient initialVideos={[]} error={error.message} />;
+  }
+}
