@@ -39,7 +39,7 @@ const AppBar: React.FC = () => {
           <div className="flex items-center justify-between h-16">
             {/* Logo/Brand */}
             <div className="flex-shrink-0">
-              <h1 className="text-2xl font-bold text-gray-900">The Paltan</h1>
+              <h1 className="text-2xl font-bold text-gray-900">द पल्टन</h1>
             </div>
             
             {/* Desktop Menu */}

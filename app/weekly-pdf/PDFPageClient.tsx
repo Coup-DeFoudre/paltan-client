@@ -86,163 +86,127 @@ const PDFPageClient: React.FC<PDFPageClientProps> = ({ initialEditions, initialA
     ? editions 
     : editions.filter(edition => edition.category === selectedCategory);
 
-  // Filter ads for PDF pages
-  const pdfAds = ads.filter(ad => ad.placements.includes('pdf-page'));
+  // Filter ads for weekly-banner placement
+  const pdfAds = ads.filter((ad: Ad) =>
+    ad.placements.includes('weekly-banner') || ad.placements.includes('weekly-pdf')
+  );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-red-600 to-orange-500 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">साप्ताहिक PDF</h1>
-          <p className="text-xl text-red-100">समसामयिक समाचार पत्र डिजिटल संस्करण</p>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Category Filter */}
-        <div className="mb-8 bg-white rounded-lg shadow-lg p-6">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">श्रेणी चुनें</h3>
-          <div className="flex flex-wrap gap-3">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  selectedCategory === category
-                    ? 'bg-red-600 text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                {category === "all" ? "सभी" : category}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {filteredEditions.map((edition, index) => (
-                <motion.div
-                  key={edition._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
-                >
-                  {/* PDF Preview/Icon */}
-                  <div className="h-48 bg-gradient-to-br from-red-100 to-orange-100 flex items-center justify-center">
-                    <div className="text-center">
-                      <FileText className="w-16 h-16 text-red-600 mx-auto mb-2" />
-                      <p className="text-sm text-gray-600 font-medium">{edition.fileName}</p>
-                    </div>
-                  </div>
-
-                  {/* Content */}
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                        {edition.category || 'सामान्य'}
-                      </span>
-                      <div className="flex items-center text-sm text-gray-500">
-                        <Calendar className="w-4 h-4 mr-1" />
-                        {formatDate(edition.publishedAt)}
+    <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8 pb-20 lg:pb-10">
+      <div className="max-w-5xl mx-auto">
+        {/* Advertisement Banner */}
+        {pdfAds.length > 0 && (
+          <section className="mb-8">
+            <div className="grid gap-4">
+              {pdfAds.map((ad) => (
+                <div key={ad._id} className="relative">
+                  {ad.link ? (
+                    <a
+                      href={ad.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 block"
+                    >
+                      <Image
+                        src={ad.adImage.asset.url}
+                        alt={ad.title || 'Advertisement'}
+                        width={1200}
+                        height={400}
+                        className="w-full h-32 sm:h-48 object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute top-0 left-0 right-0 bottom-0 bg-gradient-to-r from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <div className="absolute top-2 left-2 bg-blue-600 text-white px-2 py-1 rounded text-xs font-semibold shadow-md">
+                        विज्ञापन
+                      </div>
+                      <div className="absolute bottom-2 right-2 bg-black/70 text-white px-3 py-1.5 rounded-full text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-sm">
+                        {ad.title}
+                      </div>
+                    </a>
+                  ) : (
+                    <div className="relative overflow-hidden rounded-xl shadow-lg">
+                      <Image
+                        src={ad.adImage.asset.url}
+                        alt={ad.title || 'Advertisement'}
+                        width={1200}
+                        height={400}
+                        className="w-full h-32 sm:h-48 object-cover"
+                      />
+                      <div className="absolute top-2 left-2 bg-blue-600 text-white px-2 py-1 rounded text-xs font-semibold shadow-md">
+                        विज्ञापन
+                      </div>
+                      <div className="absolute bottom-2 right-2 bg-black/70 text-white px-3 py-1.5 rounded-full text-xs font-medium">
+                        {ad.title}
                       </div>
                     </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
-                    <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-2">
+        <motion.h1
+          className="text-3xl sm:text-4xl font-bold text-gray-900 mb-8 text-center"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          साप्ताहिक पलटन डिजिटल संस्करण
+        </motion.h1>
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+            <p className="flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5" />
+              {error}
+            </p>
+          </div>
+        )}
+
+        <div className="grid gap-6">
+          {editions.map((edition) => (
+            <motion.div
+              key={edition._id}
+              className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900 mb-2">
                       {edition.title}
-                    </h3>
-
+                    </h2>
+                    <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
+                      <span className="flex items-center gap-1">
+                        <Calendar className="w-4 h-4" />
+                        {formatDate(edition.publishedAt)}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <FileText className="w-4 h-4" />
+                        {formatFileSize(edition.fileSize)}
+                      </span>
+                    </div>
                     {edition.description && (
-                      <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                      <p className="text-gray-600 mb-4">
                         {edition.description}
                       </p>
                     )}
-
-                    {/* File Info */}
-                    <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                      <span>आकार: {formatFileSize(edition.fileSize)}</span>
-                      <span className="flex items-center">
-                        {edition.isActive ? (
-                          <span className="text-green-600">उपलब्ध</span>
-                        ) : (
-                          <span className="text-yellow-600 flex items-center">
-                            <AlertTriangle className="w-4 h-4 mr-1" />
-                            अनुपलब्ध
-                          </span>
-                        )}
-                      </span>
-                    </div>
-
-                    {/* Download Button */}
-                    <a
-                      href={edition.pdfUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
-                    >
-                      <FileDown className="w-4 h-4 mr-2" />
-                      PDF डाउनलोड करें
-                    </a>
                   </div>
-                </motion.div>
-              ))}
-            </div>
-
-            {filteredEditions.length === 0 && (
-              <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-                <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-600 mb-2">इस श्रेणी में कोई PDF नहीं मिली</h3>
-                <p className="text-gray-500">कृपया दूसरी श्रेणी चुनें या बाद में प्रयास करें।</p>
-              </div>
-            )}
-          </div>
-
-          {/* Sidebar with Ads */}
-          <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h3 className="text-lg font-bold text-gray-800 mb-4">कुल PDF</h3>
-              <div className="text-3xl font-bold text-red-600">{editions.length}</div>
-              <p className="text-sm text-gray-500">उपलब्ध दस्तावेज़</p>
-            </div>
-
-            {/* Ads */}
-            {pdfAds.length > 0 && (
-              <div className="space-y-4">
-                <h3 className="text-lg font-bold text-gray-800">विज्ञापन</h3>
-                {pdfAds.map((ad) => (
-                  <motion.div
-                    key={ad._id}
-                    whileHover={{ scale: 1.02 }}
-                    className="bg-white rounded-lg shadow-lg overflow-hidden"
+                  <a
+                    href={edition.pdfUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-lg font-medium transition-all hover:bg-red-700 active:transform active:scale-95"
                   >
-                    {ad.link ? (
-                      <a href={ad.link} target="_blank" rel="noopener noreferrer">
-                        <Image
-                          src={ad.adImage.asset.url}
-                          alt={ad.title}
-                          width={300}
-                          height={200}
-                          className="w-full h-auto object-cover"
-                        />
-                      </a>
-                    ) : (
-                      <Image
-                        src={ad.adImage.asset.url}
-                        alt={ad.title}
-                        width={300}
-                        height={200}
-                        className="w-full h-auto object-cover"
-                      />
-                    )}
-                  </motion.div>
-                ))}
+                    <FileDown className="w-5 h-5" />
+                    डाउनलोड PDF
+                  </a>
+                </div>
               </div>
-            )}
-          </div>
+            </motion.div>
+          ))}
         </div>
       </div>
     </div>

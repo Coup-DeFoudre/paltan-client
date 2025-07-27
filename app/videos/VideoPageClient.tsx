@@ -99,133 +99,144 @@ const VideoPageClient: React.FC<VideoPageClientProps> = ({ initialVideos, error 
     : videos.filter(video => video.category === selectedCategory);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-red-600 to-orange-500 text-white py-8">
-        <div className="max-w-7xl mx-auto px-4">
-          <h1 className="text-4xl font-bold text-center">वीडियो गैलरी</h1>
-          <p className="text-center mt-2 text-red-100">नवीनतम समाचार और वीडियो</p>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8 pb-20 lg:pb-10">
+      <div className="max-w-7xl mx-auto">
+        <motion.h1
+          className="text-3xl sm:text-4xl font-bold text-gray-900 mb-8 text-center"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          पलटन वीडियो गैलरी
+        </motion.h1>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Video Player */}
-          <div className="lg:col-span-2">
-            {selectedVideo && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-lg shadow-lg overflow-hidden"
+        {/* Category Filter */}
+        <motion.div
+          className="mb-8 overflow-x-auto pb-2 flex justify-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <div className="flex space-x-2">
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                  selectedCategory === category
+                    ? 'bg-red-600 text-white shadow-md'
+                    : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
+                }`}
               >
-                <div className="relative aspect-video">
+                {category === 'all' ? 'सभी' :
+                 category === 'news' ? 'समाचार' :
+                 category === 'report' ? 'रिपोर्ट' :
+                 category === 'business' ? 'व्यापार' :
+                 category === 'culture' ? 'संस्कृति' :
+                 category === 'politics' ? 'राजनीति' : category}
+              </button>
+            ))}
+          </div>
+        </motion.div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Video Player Section */}
+          <motion.div
+            className="lg:col-span-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
+          >
+            {selectedVideo && (
+              <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
                   <iframe
                     src={getEmbedUrl(selectedVideo.embedUrl)}
                     title={selectedVideo.title}
-                    className="w-full h-full"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
-                  />
+                    className="absolute inset-0 w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  ></iframe>
                 </div>
                 <div className="p-6">
-                  <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
                     {selectedVideo.title}
                   </h2>
-                  <div className="flex items-center text-sm text-gray-500 mb-4">
+                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                     <span>{formatDate(selectedVideo.publishedAt)}</span>
-                    {selectedVideo.views && (
-                      <>
-                        <span className="mx-2">•</span>
-                        <span>{formatViews(selectedVideo.views)}</span>
-                      </>
-                    )}
+                    <span className="bg-gray-100 px-3 py-1 rounded-full">
+                      {formatViews(selectedVideo.views)}
+                    </span>
                   </div>
-                  {selectedVideo.description && (
-                    <p className="text-gray-700 leading-relaxed">
-                      {selectedVideo.description}
-                    </p>
-                  )}
+                  <p className="text-gray-700">{selectedVideo.description}</p>
                 </div>
-              </motion.div>
+              </div>
             )}
-          </div>
+          </motion.div>
 
-          {/* Video List Sidebar */}
-          <div className="space-y-6">
-            {/* Category Filter */}
-            <div className="bg-white rounded-lg shadow-lg p-4">
-              <h3 className="font-bold text-gray-800 mb-3">श्रेणी</h3>
-              <div className="flex flex-wrap gap-2">
-                {categories.map((category) => (
-                  <button
-                    key={category}
-                    onClick={() => setSelectedCategory(category)}
-                    className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                      selectedCategory === category
-                        ? 'bg-red-600 text-white'
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          {/* Video Playlist Section */}
+          <motion.div
+            className="lg:col-span-1"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <div className="bg-white rounded-xl shadow-lg p-4 h-full overflow-auto max-h-[800px]">
+              <h3 className="text-lg font-semibold mb-4 text-gray-900 border-b pb-2">
+                {filteredVideos.length} वीडियोज़
+              </h3>
+
+              <div className="space-y-4">
+                {filteredVideos.map((video) => (
+                  <motion.div
+                    key={video._id}
+                    className={`cursor-pointer rounded-lg overflow-hidden group ${
+                      selectedVideo?._id === video._id ? 'ring-2 ring-red-600' : ''
                     }`}
+                    onClick={() => setSelectedVideo(video)}
+                    whileHover={{ scale: 1.02 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
                   >
-                    {category === "all" ? "सभी" : category}
-                  </button>
+                    <div className="flex items-center space-x-3">
+                      <div className="relative flex-shrink-0">
+                        <Image
+                          src={video.thumbnail?.asset?.url || video.thumbnailUrl || '/placeholder-video.svg'}
+                          alt={video.title}
+                          width={144}
+                          height={80}
+                          className={`h-20 w-36 object-cover rounded ${!video.thumbnail?.asset?.url && !video.thumbnailUrl ? 'p-2 bg-gray-50' : ''}`}
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = '/placeholder-video.svg';
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity"></div>
+                        {selectedVideo?._id === video._id && (
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="bg-red-600 rounded-full p-1">
+                              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M5.25 3L17.25 10L5.25 17V3Z"></path>
+                              </svg>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className={`text-sm font-medium line-clamp-2 ${
+                          selectedVideo?._id === video._id ? 'text-red-600' : 'text-gray-900'
+                        }`}>
+                          {video.title}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {formatViews(video.views)}
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
                 ))}
               </div>
             </div>
-
-            {/* Video List */}
-            <div className="bg-white rounded-lg shadow-lg">
-              <div className="p-4 border-b">
-                <h3 className="font-bold text-gray-800">अन्य वीडियो</h3>
-              </div>
-              <div className="max-h-96 overflow-y-auto">
-                {filteredVideos.map((video) => {
-                  const thumbnailUrl = video.thumbnail?.asset?.url || video.thumbnailUrl;
-                  
-                  return (
-                    <motion.div
-                      key={video._id}
-                      whileHover={{ backgroundColor: "#f9fafb" }}
-                      className={`p-4 border-b border-gray-100 cursor-pointer transition-colors ${
-                        selectedVideo?._id === video._id ? 'bg-red-50' : ''
-                      }`}
-                      onClick={() => setSelectedVideo(video)}
-                    >
-                      <div className="flex space-x-3">
-                        <div className="flex-shrink-0">
-                          {thumbnailUrl ? (
-                            <Image
-                              src={thumbnailUrl}
-                              alt={video.title}
-                              width={80}
-                              height={60}
-                              className="rounded object-cover"
-                            />
-                          ) : (
-                            <div className="w-20 h-15 bg-gray-200 rounded flex items-center justify-center">
-                              <span className="text-gray-400 text-xs">No Image</span>
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="text-sm font-medium text-gray-800 line-clamp-2 mb-1">
-                            {video.title}
-                          </h4>
-                          <p className="text-xs text-gray-500">
-                            {formatDate(video.publishedAt)}
-                          </p>
-                          {video.views && (
-                            <p className="text-xs text-gray-400">
-                              {formatViews(video.views)}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>
