@@ -1,10 +1,79 @@
 @import "tailwindcss";
 
+/* Hide scrollbars for webkit browsers */
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+/* Hide scrollbars for all elements */
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* Prevent horizontal scroll */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Marquee animation */
 @keyframes marquee {
   0% { transform: translateX(100%); }
   100% { transform: translateX(-100%); }
 }
+
 .animate-marquee {
   display: inline-block;
   animation: marquee 25s linear infinite;
+}
+
+/* Custom font family for Hindi content */
+.font-hindi {
+  font-family: var(--font-hindi), 'Noto Sans Devanagari', 'Hindi Sangam MN', 'Mangal', system-ui, sans-serif;
+}
+
+/* Improve text rendering for Hindi */
+.hindi-text {
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom animations */
+.animate-pulse-slow {
+  animation: pulse 3s ease-in-out infinite;
+}
+
+/* Mobile responsive improvements */
+@media (max-width: 768px) {
+  /* Improve text readability on mobile */
+  body {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  
+  /* Better spacing for mobile */
+  .hindi-text {
+    line-height: 1.7;
+  }
+  
+  /* Improve touch targets */
+  button, a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Better mobile typography */
+  h1 { font-size: 1.75rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
+  
+  /* Improved mobile form inputs */
+  input, textarea, select {
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 12px;
+  }
 }
