@@ -52,7 +52,6 @@ function formatFileSize(bytes: number): string {
 }
 
 const PDFPageClient: React.FC<PDFPageClientProps> = ({ initialEditions, initialAds, error }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [editions] = useState<Edition[]>(initialEditions);
   const [ads] = useState<Ad[]>(initialAds);
 
@@ -77,14 +76,6 @@ const PDFPageClient: React.FC<PDFPageClientProps> = ({ initialEditions, initialA
       </div>
     );
   }
-
-  // Get unique categories
-  const categories = ["all", ...new Set(editions.map(edition => edition.category).filter(Boolean))];
-
-  // Filter editions based on category
-  const filteredEditions = selectedCategory === "all" 
-    ? editions 
-    : editions.filter(edition => edition.category === selectedCategory);
 
   // Filter ads for weekly-banner placement
   const pdfAds = ads.filter((ad: Ad) =>

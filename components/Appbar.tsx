@@ -97,7 +97,7 @@ const AppBar: React.FC = () => {
       {/* Mobile Top Bar with Menu Toggle (for small screens) */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
         <div className="flex items-center justify-between px-4 h-14">
-          <h1 className="text-xl font-bold text-gray-900">The Paltan</h1>
+          <h1 className="text-xl font-bold text-gray-900">द पल्टन</h1>
           <div className="flex items-center space-x-2">
             <Link 
               href="/rss-feed"
