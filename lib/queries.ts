@@ -62,7 +62,7 @@ export const activeAdsQuery = `
 `;
 
 export const allVideosQuery = `
-  *[_type == "video"] | order(publishedAt desc) {
+  *[_type == "video" && isActive == true] | order(publishedAt desc) {
     _id,
     title,
     description,
@@ -75,8 +75,7 @@ export const allVideosQuery = `
     embedUrl,
     category,
     publishedAt,
-    views,
-    isActive
+    views
   }
 `;
 
