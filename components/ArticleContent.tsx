@@ -1,8 +1,10 @@
 'use client';
 
 import Image from 'next/image';
-import { PortableText } from '@portabletext/react';
+import { PortableText, PortableTextComponents } from '@portabletext/react';
 import type { PortableTextBlock } from 'sanity';
+import imageUrlBuilder from '@sanity/image-url';
+import { client } from '@/lib/sanity';
 
 interface Ad {
   _id: string;
@@ -18,8 +20,10 @@ interface Article {
   title: string;
   body: PortableTextBlock[];
   mainImage?: { asset: { url: string } };
+  coverImage?: { asset: { url: string } };
   excerpt?: string;
   publishedAt: string;
+  author?: string;
 }
 
 interface ArticleContentProps {
@@ -31,8 +35,45 @@ interface ArticleContentProps {
   };
 }
 
+const builder = imageUrlBuilder(client);
+function urlFor(source: object) {
+  return builder.image(source).url();
+}
+
+const portableTextComponents: PortableTextComponents = {
+  types: {
+    image: ({ value }) =>
+      value?.asset ? (
+        <div className="my-6 rounded-xl overflow-hidden shadow-md">
+          <Image
+            src={urlFor(value)}
+            alt={value.alt || 'लेख छवि'}
+            width={800}
+            height={450}
+            className="w-full h-auto object-cover"
+          />
+        </div>
+      ) : null,
+  },
+};
+
 export default function ArticleContent({ article, ads }: ArticleContentProps) {
   const { topAds, sideAds, footerAds } = ads;
+
+  // Helper for date formatting
+  const formatArticleDate = (dateString: string) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const now = new Date();
+    if (isNaN(date.getTime())) return '';
+    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+    if (diffInHours < 1) return 'अभी';
+    if (diffInHours < 24) return `${diffInHours} घंटे पहले`;
+    const days = Math.floor(diffInHours / 24);
+    if (days <= 2) return `${days} दिन पहले`;
+    // Format date as DD-MM-YYYY in Hindi
+    return `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth()+1).toString().padStart(2, '0')}-${date.getFullYear()}`;
+  };
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
@@ -89,13 +130,22 @@ export default function ArticleContent({ article, ads }: ArticleContentProps) {
             <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
               {article.title}
             </h1>
+            {/* Author and Published Date */}
+            <div className="flex flex-wrap items-center gap-6 mb-4">
+              <span className="text-base font-semibold text-gray-700 bg-gray-100 px-3 py-1 rounded-full">
+                लेखक: {article.author ? article.author : 'चेतन जोशी'}
+              </span>
+              <span className="text-base text-gray-600 bg-gray-100 px-3 py-1 rounded-full">प्रकाशित: {formatArticleDate(article.publishedAt)}</span>
+            </div>
+            <hr className="mb-8 border-gray-200" />
+            {/* Add extra gap above description for separation */}
             {article.excerpt && (
-              <p className="text-lg text-gray-600 mb-4">
+              <p className="text-lg text-gray-600 mb-8 mt-2">
                 {article.excerpt}
               </p>
             )}
             {article.mainImage && (
-              <div className="relative aspect-video rounded-xl overflow-hidden shadow-lg">
+              <div className="relative aspect-video rounded-xl overflow-hidden shadow-lg mb-8">
                 <Image
                   src={article.mainImage.asset.url}
                   alt={article.title}
@@ -108,7 +158,18 @@ export default function ArticleContent({ article, ads }: ArticleContentProps) {
 
           {/* Article Body */}
           <section className="prose prose-lg max-w-none mb-12">
-            <PortableText value={article.body} />
+            <PortableText value={article.body} components={portableTextComponents} />
+            {/* Thumbnail image at the bottom */}
+            {article.coverImage?.asset?.url && (
+              <div className="mt-12 relative aspect-video rounded-xl overflow-hidden shadow-lg">
+                <Image
+                  src={article.coverImage.asset.url}
+                  alt={article.title}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            )}
           </section>
 
           {/* Footer Ads */}

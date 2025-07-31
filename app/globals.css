@@ -16,6 +16,7 @@
 html, body {
   overflow-x: hidden;
   max-width: 100vw;
+  font-family: 'Poppins', var(--font-hindi), var(--font-inter), system-ui, sans-serif;
 }
 
 /* Marquee animation */
@@ -29,17 +30,51 @@ html, body {
   animation: marquee 25s linear infinite;
 }
 
-/* Custom font family for Hindi content */
+/* Enhanced font family for Hindi content matching Naidunia's approach */
 .font-hindi {
-  font-family: var(--font-hindi), 'Noto Sans Devanagari', 'Hindi Sangam MN', 'Mangal', system-ui, sans-serif;
+  font-family: var(--font-hindi), 'Noto Sans Devanagari', 'Mangal', 'Lohit Devanagari', system-ui, sans-serif;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "dlig" 1;
 }
 
-/* Improve text rendering for Hindi */
+/* Enhanced font family for English content */
+.font-english {
+  font-family: 'Poppins', var(--font-inter), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Mixed content font stack (Hindi + English) */
+.font-mixed {
+  font-family: var(--font-hindi), 'Poppins', var(--font-inter), 'Noto Sans Devanagari', 'Inter', system-ui, sans-serif;
+}
+
+/* Improve text rendering for Hindi - enhanced version */
 .hindi-text {
-  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "dlig" 1, "nukt" 1, "akhn" 1;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-variant-ligatures: normal;
+  font-variant-numeric: normal;
+  hyphens: auto;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Naidunia-style headline typography */
+.naidunia-headline {
+  font-family: var(--font-hindi), 'Noto Sans Devanagari', sans-serif;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+}
+
+/* News body text styling */
+.news-body {
+  font-family: var(--font-hindi), 'Noto Sans Devanagari', sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+  font-size: 16px;
+  color: #333;
 }
 
 /* Custom animations */
@@ -47,17 +82,27 @@ html, body {
   animation: pulse 3s ease-in-out infinite;
 }
 
-/* Mobile responsive improvements */
+/* Mobile responsive improvements - Enhanced for Naidunia-style */
 @media (max-width: 768px) {
   /* Improve text readability on mobile */
   body {
     font-size: 16px;
     line-height: 1.6;
+    font-family: var(--font-hindi), 'Noto Sans Devanagari', sans-serif;
   }
   
-  /* Better spacing for mobile */
+  /* Better spacing for mobile Hindi text */
   .hindi-text {
     line-height: 1.7;
+    font-size: 15px;
+    letter-spacing: 0.01em;
+  }
+  
+  /* Enhanced headline sizing for mobile */
+  .naidunia-headline {
+    font-size: 1.4rem;
+    line-height: 1.25;
+    margin-bottom: 0.75rem;
   }
   
   /* Improve touch targets */
@@ -66,14 +111,33 @@ html, body {
     min-width: 44px;
   }
   
-  /* Better mobile typography */
-  h1 { font-size: 1.75rem; }
-  h2 { font-size: 1.5rem; }
-  h3 { font-size: 1.25rem; }
+  /* Better mobile typography with Hindi font priority */
+  h1 { 
+    font-size: 1.75rem; 
+    font-family: var(--font-hindi), 'Noto Sans Devanagari', sans-serif;
+    font-weight: 700;
+  }
+  h2 { 
+    font-size: 1.5rem; 
+    font-family: var(--font-hindi), 'Noto Sans Devanagari', sans-serif;
+    font-weight: 600;
+  }
+  h3 { 
+    font-size: 1.25rem; 
+    font-family: var(--font-hindi), 'Noto Sans Devanagari', sans-serif;
+    font-weight: 600;
+  }
   
-  /* Improved mobile form inputs */
+  /* Improved mobile form inputs with proper font */
   input, textarea, select {
     font-size: 16px; /* Prevents zoom on iOS */
     padding: 12px;
+    font-family: var(--font-hindi), var(--font-inter), system-ui, sans-serif;
+  }
+
+  /* News content specific mobile styles */
+  .news-body {
+    font-size: 15px;
+    line-height: 1.65;
   }
 }
