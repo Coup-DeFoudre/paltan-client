@@ -11,6 +11,19 @@ const nextConfig: NextConfig = {
       }
     ],
   },
+  // Font optimization for production
+  optimizeFonts: true,
+  // Reduce bundle size
+  swcMinify: true,
+  // Better error handling in production
+  onDemandEntries: {
+    maxInactiveAge: 25 * 1000,
+    pagesBufferLength: 2,
+  },
+  // Experimental features for better performance
+  experimental: {
+    optimizePackageImports: ['@sanity/client'],
+  },
 };
 
 export default nextConfig;

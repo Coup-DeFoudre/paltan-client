@@ -1,5 +1,7 @@
-export const allArticlesQuery = `
-  *[_type == "article"] | order(publishedAt desc) {
+import { groq } from 'next-sanity';
+
+export const allArticlesQuery = groq`
+  *[_type == "article" && !(_id in path("drafts.**")) && defined(slug.current) && defined(publishedAt)] | order(publishedAt desc) {
     _id,
     title,
     slug,
@@ -11,15 +13,19 @@ export const allArticlesQuery = `
     },
     isTrending,
     category,
-    body
+    body,
+    excerpt,
+    author
   }
 `;
 
-export const trendingArticlesQuery = `
-  *[_type == "article" && isTrending == true] | order(publishedAt desc) {
+export const trendingArticlesQuery = groq`
+  *[_type == "article" && !(_id in path("drafts.**")) && isTrending == true && defined(slug.current) && defined(publishedAt)] | order(publishedAt desc) {
     _id,
     title,
     slug,
+    publishedAt,
+    excerpt,
     coverImage {
       asset->{
         url
@@ -28,14 +34,104 @@ export const trendingArticlesQuery = `
   }
 `;
 
-export const activeNoticesQuery = `
+export const editorPicksQuery = groq`
+  *[_type == "editorPick" && isActive == true] | order(order asc) {
+    _id,
+    title,
+    description,
+    coverImage {
+      asset -> {
+        url
+      }
+    },
+    linkedArticle -> {
+      slug
+    },
+    externalLink,
+    order
+  }
+`;
+
+// New query for articles marked as editor picks
+export const editorPickArticlesQuery = groq`
+  *[_type == "article" && !(_id in path("drafts.**")) && isEditorPick == true && defined(slug.current) && defined(publishedAt)] | order(editorPickOrder asc, publishedAt desc) [0...4] {
+    _id,
+    title,
+    slug,
+    publishedAt,
+    excerpt,
+    coverImage {
+      asset -> {
+        url
+      }
+    },
+    isEditorPick,
+    editorPickOrder,
+    category,
+    author
+  }
+`;
+
+export const featuresQuery = groq`
+  *[_type == "feature" && isActive == true] | order(order asc) {
+    _id,
+    title,
+    description,
+    icon,
+    featureImage {
+      asset -> {
+        url
+      }
+    },
+    featureType,
+    link,
+    order
+  }
+`;
+
+export const videosByCategory = groq`
+  *[_type == "video" && isActive == true && category == $category] | order(publishedAt desc) [0...4] {
+    _id,
+    title,
+    description,
+    thumbnail {
+      asset-> {
+        url
+      }
+    },
+    thumbnailUrl,
+    embedUrl,
+    category,
+    publishedAt,
+    views
+  }
+`;
+
+export const articlesByCategory = groq`
+  *[_type == "article" && !(_id in path("drafts.**")) && category == $category && defined(slug.current) && defined(publishedAt)] | order(publishedAt desc) [0...4] {
+    _id,
+    title,
+    slug,
+    publishedAt,
+    coverImage {
+      asset -> {
+        url
+      }
+    },
+    category,
+    excerpt,
+    author
+  }
+`;
+
+export const activeNoticesQuery = groq`
   *[_type == "notice" && isActive == true] | order(order asc) {
     _id,
     message
   }
 `;
 
-export const activeAdsQuery = `
+export const activeAdsQuery = groq`
   *[
     _type == "advertisement" && 
     defined(placements) && 
@@ -61,7 +157,7 @@ export const activeAdsQuery = `
   }
 `;
 
-export const allVideosQuery = `
+export const allVideosQuery = groq`
   *[_type == "video" && isActive == true] | order(publishedAt desc) {
     _id,
     title,
@@ -96,7 +192,7 @@ export const newspaperEditionsQuery = `
 `;
 
 export const articleBySlugQuery = `
-  *[_type == "article" && slug.current == $slug][0]{
+  *[_type == "article" && !(_id in path("drafts.**")) && slug.current == $slug && defined(publishedAt)][0]{
     _id,
     title,
     slug,
@@ -106,6 +202,321 @@ export const articleBySlugQuery = `
     publishedAt,
     body,
     category,
-    isTrending
+    subcategory,
+    isTrending,
+    author,
+    excerpt
+  }
+`;
+
+export const categoryControlsQuery = groq`
+  *[_type == "categoryControl" && isVisible == true] | order(displayOrder asc) {
+    _id,
+    categoryKey,
+    displayName,
+    displayNameHindi,
+    description,
+    icon,
+    isVisible,
+    displayOrder,
+    maxArticles,
+    gradientColor
+  }
+`;
+
+// Event Queries
+export const allEventsQuery = groq`
+  *[_type == "event" && isPublished == true] | order(startDate asc) {
+    _id,
+    title,
+    slug,
+    description,
+    detailedDescription,
+    eventImage {
+      asset -> {
+        url
+      }
+    },
+    category,
+    startDate,
+    endDate,
+    isAllDay,
+    venue {
+      name,
+      address,
+      city,
+      state,
+      coordinates
+    },
+    organizer {
+      name,
+      contact,
+      email,
+      website
+    },
+    ticketInfo {
+      isFree,
+      price,
+      bookingUrl,
+      availableSeats
+    },
+    tags,
+    priority,
+    isFeatured,
+    publishedAt
+  }
+`;
+
+export const upcomingEventsQuery = groq`
+  *[_type == "event" && isPublished == true && startDate > now()] | order(startDate asc) {
+    _id,
+    title,
+    slug,
+    description,
+    eventImage {
+      asset -> {
+        url
+      }
+    },
+    category,
+    startDate,
+    endDate,
+    isAllDay,
+    venue {
+      name,
+      city,
+      state
+    },
+    organizer {
+      name
+    },
+    ticketInfo {
+      isFree,
+      price
+    },
+    priority,
+    isFeatured
+  }
+`;
+
+export const featuredEventsQuery = groq`
+  *[_type == "event" && isPublished == true && isFeatured == true] | order(startDate asc) {
+    _id,
+    title,
+    slug,
+    description,
+    eventImage {
+      asset -> {
+        url
+      }
+    },
+    category,
+    startDate,
+    endDate,
+    venue {
+      name,
+      city,
+      state
+    },
+    ticketInfo {
+      isFree,
+      price
+    },
+    priority
+  }
+`;
+
+export const eventBySlugQuery = groq`
+  *[_type == "event" && slug.current == $slug][0] {
+    _id,
+    title,
+    slug,
+    description,
+    detailedDescription,
+    eventImage {
+      asset -> {
+        url
+      }
+    },
+    category,
+    startDate,
+    endDate,
+    isAllDay,
+    venue {
+      name,
+      address,
+      city,
+      state,
+      coordinates
+    },
+    organizer {
+      name,
+      contact,
+      email,
+      website
+    },
+    ticketInfo {
+      isFree,
+      price,
+      bookingUrl,
+      availableSeats
+    },
+    tags,
+    priority,
+    publishedAt
+  }
+`;
+
+// Simple Submission Settings Query
+export const submissionSettingsQuery = groq`
+  *[_type == "submissionSettings"][0] {
+    googleSheetsUrl,
+    isActive
+  }
+`;
+
+// Testimonials Queries
+export const testimonialsQuery = groq`
+  *[_type == "testimonial" && !(_id in path("drafts.**")) && defined(publishedAt)] | order(publishedAt desc) {
+    _id,
+    name,
+    location,
+    quote,
+    category,
+    rating,
+    featured,
+    publishedAt
+  }
+`;
+
+export const featuredTestimonialsQuery = groq`
+  *[_type == "testimonial" && !(_id in path("drafts.**")) && featured == true && defined(publishedAt)] | order(publishedAt desc) [0...6] {
+    _id,
+    name,
+    location,
+    quote,
+    category,
+    rating,
+    featured,
+    publishedAt
+  }
+`;
+
+// Enhanced Search Queries
+export const searchQuery = groq`
+  *[
+    _type in ["article", "video", "event"] && 
+    !(_id in path("drafts.**")) && 
+    defined(slug.current) && 
+    defined(publishedAt) &&
+    (
+      title match $searchTerm + "*" ||
+      title match "*" + $searchTerm + "*" ||
+      pt::text(body) match $searchTerm + "*" ||
+      pt::text(body) match "*" + $searchTerm + "*" ||
+      excerpt match $searchTerm + "*" ||
+      excerpt match "*" + $searchTerm + "*" ||
+      description match $searchTerm + "*" ||
+      description match "*" + $searchTerm + "*" ||
+      category match $searchTerm + "*" ||
+      category match "*" + $searchTerm + "*" ||
+      author match $searchTerm + "*" ||
+      author match "*" + $searchTerm + "*" ||
+      tags[] match $searchTerm + "*" ||
+      tags[] match "*" + $searchTerm + "*"
+    )
+  ] | order(publishedAt desc) [$start...$end] {
+    _type,
+    _id,
+    title,
+    slug,
+    excerpt,
+    description,
+    category,
+    author,
+    publishedAt,
+    coverImage {
+      asset -> {
+        url
+      }
+    },
+    thumbnail {
+      asset -> {
+        url
+      }
+    },
+    thumbnailUrl,
+    embedUrl,
+    views,
+    tags,
+    startDate,
+    endDate,
+    venue {
+      name,
+      city,
+      state
+    }
+  }
+`;
+
+// Debug search query - simpler version for testing
+export const debugSearchQuery = groq`
+  *[
+    _type in ["article", "video", "event"] && 
+    !(_id in path("drafts.**")) && 
+    defined(slug.current) && 
+    defined(publishedAt)
+  ] | order(publishedAt desc) [0...10] {
+    _type,
+    _id,
+    title,
+    slug,
+    category,
+    publishedAt
+  }
+`;
+
+export const searchSuggestionsQuery = groq`
+  *[
+    _type in ["article", "video", "event"] && 
+    !(_id in path("drafts.**")) && 
+    defined(slug.current) && 
+    defined(publishedAt) &&
+    (
+      title match $searchTerm + "*" ||
+      category match $searchTerm + "*" ||
+      author match $searchTerm + "*"
+    )
+  ] | order(publishedAt desc) [0...5] {
+    _type,
+    _id,
+    title,
+    category,
+    author
+  }
+`;
+
+export const searchCountQuery = groq`
+  count(*[
+    _type in ["article", "video", "event"] && 
+    !(_id in path("drafts.**")) && 
+    defined(slug.current) && 
+    defined(publishedAt) &&
+    (
+      title match $searchTerm + "*" ||
+      pt::text(body) match $searchTerm + "*" ||
+      excerpt match $searchTerm + "*" ||
+      description match $searchTerm + "*" ||
+      category match $searchTerm + "*" ||
+      author match $searchTerm + "*" ||
+      tags[] match $searchTerm + "*"
+    )
+  ])
+`;
+
+export const popularSearchesQuery = groq`
+  *[_type == "searchAnalytics"] | order(count desc) [0...10] {
+    searchTerm,
+    count
   }
 `;

@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Noto_Sans_Devanagari, Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import AppBar from "@/components/Appbar";
+import Footer from "@/components/Footer";
 import ScrollProgress from "@/components/ScrollProgress";
+import FloatingSocial from "@/components/FloatingSocial";
+import WelcomeGate from "@/components/WelcomeGate";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,14 +38,21 @@ const inter = Inter({
 const poppins = Poppins({
   variable: "--font-poppins",
   subsets: ["latin"],
-  weight: ["400", "500", "700"],
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
   display: "swap",
+  preload: true,
 });
 
 export const metadata: Metadata = {
   title: "द पल्टन - Digital News Platform",
   description: "Modern Hindi news platform with multimedia content",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes",
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
 };
 
 export default function RootLayout({
@@ -50,19 +61,30 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="hi" className="scroll-smooth">
+    <html lang="hi" className="scroll-smooth dark" suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${notoSansDevanagari.variable} ${inter.variable} ${poppins.variable} antialiased`}
+        suppressHydrationWarning={true}
       >
-        <ScrollProgress />
-        <div className="mb-15">
-          <AppBar />
-        </div>
-
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={false}
+          disableTransitionOnChange={false}
+        >
+          <WelcomeGate>
+            <ScrollProgress />
+            <AppBar />
+            <main className="pt-16 pb-20 lg:pt-16 lg:pb-0 min-h-screen">
+              {children}
+            </main>
+            <Footer />
+            <FloatingSocial />
+          </WelcomeGate>
+        </ThemeProvider>
       </body>
     </html>
   );

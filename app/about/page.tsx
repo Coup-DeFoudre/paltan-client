@@ -1,240 +1,187 @@
-'use client';
+import { Metadata } from 'next';
+import HeroBackground from '@/components/HeroBackground';
+import PremiumCard from '@/components/PremiumCard';
+import TestimonialsSection from '@/components/TestimonialsSection';
+import AboutHero from '@/components/AboutHero';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import { client } from '@/lib/sanity';
+import { featuredTestimonialsQuery } from '@/lib/queries';
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { 
-  Globe,
-  BarChart,
-  Target 
-} from 'lucide-react';
-
-const scaleIn = {
-  initial: { opacity: 0, scale: 0.8 },
-  animate: { opacity: 1, scale: 1 },
-  transition: { duration: 0.5 }
+export const metadata: Metadata = {
+  title: 'हमारे बारे में - द पल्टन',
+  description: 'द पल्टन के बारे में जानें - एक स्वतंत्र मीडिया प्लेटफॉर्म जो सच्ची पत्रकारिता करता है',
 };
 
-const AboutPage = () => {
-  const stats = [
-    { number: "15M+", label: "मासिक पाठक" },
-    { number: "28", label: "राज्यों में उपस्थिति" },
-    { number: "24x7", label: "समाचार अपडेट" },
-    { number: "100+", label: "पत्रकार" },
-  ];
-
-  const achievements = [
-    {
-      year: "2020",
-      title: "इंदौर से शुरुआत",
-      description: "मध्य प्रदेश के दिल से डिजिटल क्रांति की शुरुआत"
-    },
-    {
-      year: "2021",
-      title: "राष्ट्रीय विस्तार",
-      description: "भारत के प्रमुख शहरों में विस्तार"
-    },
-    {
-      year: "2022",
-      title: "डिजिटल नेतृत्व",
-      description: "भारत का सबसे तेज़ बढ़ता डिजिटल न्यूज़ प्लेटफॉर्म"
-    },
-    {
-      year: "2023",
-      title: "नई ऊंचाइयां",
-      description: "15 मिलियन से अधिक मासिक पाठकों का आंकड़ा पार"
-    }
-  ];
-
-  const values = [
-    {
-      icon: <Target className="w-12 h-12 text-red-600" />,
-      title: "निष्पक्ष पत्रकारिता",
-      description: "सत्य और निष्पक्षता हमारी प्राथमिकता है"
-    },
-    {
-      icon: <Globe className="w-12 h-12 text-red-600" />,
-      title: "राष्ट्रीय दृष्टिकोण",
-      description: "देश के हर कोने से खबरें और विश्लेषण"
-    },
-    {
-      icon: <BarChart className="w-12 h-12 text-red-600" />,
-      title: "डेटा-आधारित रिपोर्टिंग",
-      description: "तथ्यों और आंकड़ों पर आधारित विश्लेषण"
-    }
-  ];
+export default async function AboutPage() {
+  // Fetch featured testimonials
+  const testimonials = await client.fetch(featuredTestimonialsQuery, {}, { cache: 'no-store' });
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 lg:pb-0">
-      {/* Hero Section */}
-      <section className="relative bg-red-600 text-white py-24 overflow-hidden">
-        <motion.div 
-          className="absolute inset-0 bg-gradient-to-r from-red-700 to-red-500"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-        />
-        <div className="absolute inset-0 opacity-20 bg-[url('/globe.svg')] bg-center bg-no-repeat bg-contain"></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <motion.div 
-            className="text-center"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              पलटन न्यूज़
-            </h1>
-            <p className="text-xl md:text-2xl text-red-100 max-w-3xl mx-auto">
-              भारत का प्रमुख डिजिटल न्यूज़ प्लेटफॉर्म
-            </p>
-          </motion.div>
-        </div>
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-gray-50"></div>
-      </section>
+    <div className="min-h-screen relative">
+      <HeroBackground />
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
 
-      {/* Stats Section */}
-      <section className="py-16 -mt-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-            {stats.map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                className="bg-white rounded-xl shadow-lg p-6 text-center"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
-                <h3 className="text-3xl font-bold text-red-600 mb-2">{stat.number}</h3>
-                <p className="text-gray-600">{stat.label}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+        {/* Hero Section */}
+        <AboutHero />
 
-      {/* Vision Section */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            className="max-w-3xl mx-auto text-center mb-16"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">हमारी दृष्टि</h2>
-            <p className="text-lg text-gray-600 leading-relaxed">
-              पलटन न्यूज़ की शुरुआत इंदौर से हुई, एक ऐसे विचार के साथ जो आज भारत का प्रमुख डिजिटल न्यूज़ प्लेटफॉर्म बन चुका है। 
-              हमारा लक्ष्य देश के हर नागरिक तक सटीक, निष्पक्ष और विश्वसनीय समाचार पहुंचाना है।
-            </p>
-          </motion.div>
+        {/* Main About Content */}
+        <ErrorBoundary>
+          <section className="prose prose-lg max-w-none mb-16">
+            <PremiumCard glowColor="amber" className="mb-12">
+              <h2 className="text-3xl font-bold text-amber-400 mb-6">About Us | हमारे बारे में</h2>
+            
+              <p className="text-slate-200 mb-6 text-lg leading-relaxed">
+                Welcome to <strong className="text-amber-400">The Paltan</strong> – Jahan Khabar sirf headlines nahi hoti, ek samajh bhi hoti hai.
+              </p>
+            
+              <p className="text-slate-300 mb-6 leading-relaxed">
+                यह मंच एक प्रयास है – सच्ची, संतुलित और संवेदनशील पत्रकारिता के लिए। यहाँ हर खबर का मक़सद सिर्फ जानकारी देना नहीं, 
+                बल्कि उस पर सोचने की जगह बनाना भी है।
+              </p>
+            
+              <p className="text-slate-300 mb-6 leading-relaxed">
+                हम मानते हैं कि धर्म, राजनीति, समाज, युवा मुद्दे, ग्रामीण ज़िंदगियाँ, और हमारी सांस्कृतिक विरासत — ये सब एक-दूसरे से जुड़े हैं। 
+                और इन्हें समझने के लिए ज़रूरी है कि हम सिर्फ शोर नहीं, संवाद करें।
+              </p>
+            </PremiumCard>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {values.map((value, index) => (
-              <motion.div
-                key={value.title}
-                className="bg-gray-50 rounded-xl p-8"
-                variants={scaleIn}
-                initial="initial"
-                whileInView="animate"
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.2 }}
-              >
-                <div className="mb-6">{value.icon}</div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">{value.title}</h3>
-                <p className="text-gray-600">{value.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+            {/* What We Do */}
+            <div className="mb-12">
+              <h2 className="text-3xl font-bold text-slate-100 mb-8">हम क्या करते हैं:</h2>
+              <div className="grid md:grid-cols-2 gap-6">
+                <PremiumCard glowColor="green" delay={0.1}>
+                  <h3 className="text-xl font-semibold text-emerald-400 mb-3">📰 राष्ट्रीय और स्थानीय मुद्दे</h3>
+                  <p className="text-slate-300">जमीनी रिपोर्टिंग और गहरे विश्लेषण के साथ</p>
+                </PremiumCard>
+                <PremiumCard glowColor="amber" delay={0.2}>
+                  <h3 className="text-xl font-semibold text-orange-400 mb-3">🕉️ धर्म और अध्यात्म</h3>
+                  <p className="text-slate-300">विचारशील लेख और संवाद</p>
+                </PremiumCard>
+                <PremiumCard glowColor="purple" delay={0.3}>
+                  <h3 className="text-xl font-semibold text-purple-400 mb-3">🎓 युवा और करियर</h3>
+                  <p className="text-slate-300">स्किलिंग से जुड़ी सूचनाएं और अवसर</p>
+                </PremiumCard>
+                <PremiumCard glowColor="teal" delay={0.4}>
+                  <h3 className="text-xl font-semibold text-pink-400 mb-3">🎨 साहित्य और संस्कृति</h3>
+                  <p className="text-slate-300">लोक संस्कृति को स्पेस देना</p>
+                </PremiumCard>
+              </div>
+              <div className="mt-6 text-center">
+                <p className="text-slate-100 text-lg font-medium">
+                  और हाँ, आपकी आवाज़ को भी – क्योंकि हम मानते हैं कि हर पाठक एक संभावित लेखक है।
+                </p>
+              </div>
+            </div>
 
-      {/* Journey Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">हमारी यात्रा</h2>
-            <p className="text-lg text-gray-600">इंदौर से राष्ट्रीय स्तर तक</p>
-          </motion.div>
+            {/* Mission Statement */}
+            <div className="bg-slate-800/50 backdrop-blur-sm p-8 rounded-2xl mb-12 border border-slate-700/30">
+              <h2 className="text-3xl font-bold text-slate-100 mb-6">हमारा मिशन</h2>
+              <p className="text-slate-300 mb-4 text-lg leading-relaxed">
+                यह वेबसाइट फिलहाल एक स्वतंत्र और व्यक्तिगत पहल है – किसी कॉर्पोरेट या राजनीतिक एजेंडा से नहीं जुड़ी। 
+                हमारी नज़र साफ है:
+              </p>
+              <blockquote className="text-2xl font-bold text-amber-400 text-center py-4 italic">
+                &ldquo;Khabar ko sirf fast nahi, farsighted bhi banaya jaye.&rdquo;
+              </blockquote>
+            </div>
 
-          <div className="space-y-8">
-            {achievements.map((achievement, index) => (
-              <motion.div
-                key={achievement.year}
-                className="bg-white rounded-xl p-6 shadow-lg flex items-start space-x-6"
-                initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.2 }}
-              >
-                <div className="w-24 flex-shrink-0">
-                  <div className="text-2xl font-bold text-red-600">{achievement.year}</div>
+            {/* Reviews/Testimonials */}
+            <TestimonialsSection testimonials={testimonials} />
+
+        {/* Join Us Section */}
+        <div className="relative overflow-hidden bg-slate-800/50 backdrop-blur-sm border border-slate-700/30 rounded-2xl mb-12">
+          {/* Subtle gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-purple-500/10"></div>
+          
+          <div className="relative p-8">
+            <h2 className="text-3xl font-bold text-slate-100 mb-8 text-center">आइए जुड़िए</h2>
+            
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Newsletter */}
+              <div className="group">
+                <div className="flex items-center mb-4">
+                  <div className="w-12 h-12 bg-red-500/20 rounded-xl flex items-center justify-center mr-4 group-hover:bg-red-500/30 transition-colors">
+                    <span className="text-2xl">📩</span>
+                  </div>
+                  <h3 className="text-xl font-semibold text-slate-100">न्यूज़लेटर</h3>
                 </div>
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{achievement.title}</h3>
-                  <p className="text-gray-600">{achievement.description}</p>
+                <p className="text-slate-300 leading-relaxed">हर हफ्ते के टॉप आर्टिकल्स हमारे न्यूज़लेटर में</p>
+              </div>
+
+              {/* Share Thoughts */}
+              <div className="group">
+                <div className="flex items-center mb-4">
+                  <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center mr-4 group-hover:bg-blue-500/30 transition-colors">
+                    <span className="text-2xl">💬</span>
+                  </div>
+                  <h3 className="text-xl font-semibold text-slate-100">अपने विचार साझा करें</h3>
                 </div>
-              </motion.div>
-            ))}
+                <p className="text-slate-300 leading-relaxed">हम उन्हें जगह देंगे</p>
+              </div>
+
+              {/* WhatsApp Updates */}
+              <div className="group">
+                <div className="flex items-center mb-4">
+                  <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center mr-4 group-hover:bg-green-500/30 transition-colors">
+                    <span className="text-2xl">📲</span>
+                  </div>
+                  <h3 className="text-xl font-semibold text-slate-100">WhatsApp अपडेट्स</h3>
+                </div>
+                <p className="text-slate-300 leading-relaxed">सीधे लिंक और अपडेट्स पाएं</p>
+              </div>
+
+              {/* Writing Opportunity */}
+              <div className="group">
+                <div className="flex items-center mb-4">
+                  <div className="w-12 h-12 bg-orange-500/20 rounded-xl flex items-center justify-center mr-4 group-hover:bg-orange-500/30 transition-colors">
+                    <span className="text-2xl">✍️</span>
+                  </div>
+                  <h3 className="text-xl font-semibold text-slate-100">लेखन का मौका</h3>
+                </div>
+                <p className="text-slate-300 leading-relaxed">अगर आप सिर्फ पढ़ना नहीं, लिखना भी चाहते हैं, तो हमसे संपर्क करें।</p>
+              </div>
+            </div>
           </div>
         </div>
-      </section>
 
-      {/* Presence Section */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">राष्ट्रीय उपस्थिति</h2>
-            <p className="text-lg text-gray-600">देश भर में फैला हमारा नेटवर्क</p>
-          </motion.div>
+            {/* Editor's Note */}
+            <div className="bg-slate-800/50 backdrop-blur-sm p-8 rounded-2xl mb-12 border border-slate-700/30">
+              <h2 className="text-2xl font-bold text-slate-100 mb-4">From the Editor&apos;s Desk</h2>
+              <div className="text-slate-300 space-y-4">
+                <p>When we began this journey, our aim was simple — to listen.</p>
+                <p>To listen to the man from the village with no internet but deep wisdom. To the woman who&apos;s never been on camera but has a story worth telling. To the youth who wants to ask uncomfortable questions, and to the traditions that still shape our modern identities.</p>
+                <p>This is a platform that celebrates faith without fanaticism, critique without chaos, and society without silence.</p>
+                <p>Whether it&apos;s a ground report from the highways or a cultural reflection from the heart of India — we bring stories that speak.</p>
+                <p className="font-semibold text-amber-400">Truth. Culture. People. That&apos;s our foundation. And our promise.</p>
+                <div className="mt-6 pt-4 border-t border-slate-600/30">
+                  <p className="font-semibold text-slate-100">— Chetan Joshi</p>
+                  <p className="text-sm text-slate-400">Editor & Founder, The Paltan</p>
+                  <p className="text-sm text-amber-400">Email: <a href="mailto:thepaltann@gmail.com" className="underline">thepaltann@gmail.com</a></p>
+                </div>
+              </div>
+            </div>
 
-          <div className="grid md:grid-cols-4 gap-8">
-            {["उत्तर भारत", "दक्षिण भारत", "पूर्वी भारत", "पश्चिमी भारत"].map((region, index) => (
-              <motion.div
-                key={region}
-                className="bg-gray-50 rounded-xl p-6 text-center"
-                whileHover={{ y: -5 }}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.2 }}
-              >
-                <h3 className="text-lg font-bold text-gray-900 mb-2">{region}</h3>
-                <p className="text-red-600">24x7 कवरेज</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Closing Section */}
-      <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              आप का अपना न्यूज़ चैनल
-            </h2>
-            <p className="text-lg text-gray-600">
-              पलटन न्यूज़ आपको देता है देश और दुनिया की हर खबर, निष्पक्ष और विश्वसनीय तरीके से।
-            </p>
-          </motion.div>
-        </div>
-      </section>
+            {/* Platform Description */}
+            <div className="bg-slate-800/50 backdrop-blur-sm p-8 rounded-2xl border border-slate-700/30">
+              <h2 className="text-2xl font-bold text-slate-100 mb-4">About The Paltan</h2>
+              <div className="text-slate-300 space-y-4">
+                <p>The Paltan is an independent media platform that blends journalistic integrity with cultural consciousness.</p>
+                <p>We cover the real India — from spiritual dialogues to rural voices, policy shifts to youth aspirations.</p>
+                <p>Our work focuses on underreported themes in religion, governance, social issues, and community change — through ground reports, explainers, and reader-driven storytelling.</p>
+                <p>Whether it&apos;s a festival in Ujjain, a civic issue in Indore, or a skill training in Rajasthan&apos;s hinterlands, we believe every story deserves a platform.</p>
+                <div className="mt-6 pt-4 border-t border-slate-600/30">
+                  <p className="font-semibold text-center text-lg text-amber-400">
+                    (Honest, Inclusive, Local-first)
+                  </p>
+                  <p className="text-center text-sm mt-2 text-slate-400">
+                    Format: Multilingual (Hindi + English)
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </ErrorBoundary>
+      </div>
     </div>
   );
-};
-
-export default AboutPage;
+}
