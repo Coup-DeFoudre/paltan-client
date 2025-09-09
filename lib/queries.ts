@@ -158,7 +158,7 @@ export const activeAdsQuery = groq`
 `;
 
 export const allVideosQuery = groq`
-  *[_type == "video" && isActive == true] | order(publishedAt desc) {
+  *[_type == "video" && !(_id in path("drafts.**")) && isActive == true] | order(publishedAt desc) {
     _id,
     title,
     description,
@@ -171,7 +171,9 @@ export const allVideosQuery = groq`
     embedUrl,
     category,
     publishedAt,
-    views
+    views,
+    isActive,
+    _updatedAt
   }
 `;
 

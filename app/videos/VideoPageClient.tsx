@@ -65,8 +65,21 @@ const getEmbedUrl = (url: string): string => {
 
 const VideoPageClient: React.FC<VideoPageClientProps> = ({ initialVideos, error }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [videos] = useState<Video[]>(initialVideos);
+  const [videos, setVideos] = useState<Video[]>(initialVideos);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const searchParams = useSearchParams();
+
+  // Function to refresh videos
+  const refreshVideos = async () => {
+    setIsRefreshing(true);
+    try {
+      // Force a page reload to get fresh data
+      window.location.reload();
+    } catch (error) {
+      console.error('Error refreshing videos:', error);
+      setIsRefreshing(false);
+    }
+  };
 
   // Resolve focused video from URL (?focus=<id>) or default to first
   const focusedVideo = useMemo(() => {
@@ -190,6 +203,18 @@ const VideoPageClient: React.FC<VideoPageClientProps> = ({ initialVideos, error 
                 animate={{ width: 96 }}
                 transition={{ duration: 0.8, delay: 0.7 }}
               />
+              
+              {/* Refresh Button */}
+              <motion.button
+                onClick={refreshVideos}
+                disabled={isRefreshing}
+                className="mt-6 px-4 py-2 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/30 rounded-lg text-amber-400 text-sm transition-all duration-300 disabled:opacity-50"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8, delay: 1.0 }}
+              >
+                {isRefreshing ? 'रिफ्रेश हो रहा है...' : 'वीडियो रिफ्रेश करें'}
+              </motion.button>
             </div>
           </motion.div>
 
