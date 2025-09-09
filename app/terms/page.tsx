@@ -18,7 +18,7 @@ export default function TermsPage() {
             
             <div className="bg-slate-800/50 p-6 rounded-lg border border-slate-700/50 mb-8">
               <p className="text-slate-300 leading-relaxed">
-                Welcome to <span className="text-amber-400 font-semibold">द पल्टन (The Paltan)</span> ("we", "our", or "us"). 
+                Welcome to <span className="text-amber-400 font-semibold">द पल्टन (The Paltan)</span> (&ldquo;we&rdquo;, &ldquo;our&rdquo;, or &ldquo;us&rdquo;). 
                 By accessing or using this website, you agree to comply with and be bound by these Terms of Use. 
                 If you do not agree with any part of these terms, please do not use the website.
               </p>
@@ -71,7 +71,7 @@ export default function TermsPage() {
             
             <div className="bg-slate-800/50 p-6 rounded-lg border border-slate-700/50 mb-8">
               <p className="text-slate-300 leading-relaxed">
-                <span className="text-amber-400 font-semibold">दी पल्टन</span> ("हम", "हमारा", "इस साइट") का उपयोग करके, 
+                <span className="text-amber-400 font-semibold">दी पल्टन</span> (&ldquo;हम&rdquo;, &ldquo;हमारा&rdquo;, &ldquo;इस साइट&rdquo;) का उपयोग करके, 
                 आप इन उपयोग की शर्तों से सहमत होते हैं। यदि आप इन शर्तों के किसी भी हिस्से से सहमत नहीं हैं, 
                 तो कृपया वेबसाइट का उपयोग न करें।
               </p>
