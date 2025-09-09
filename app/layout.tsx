@@ -8,6 +8,8 @@ import FloatingSocial from "@/components/FloatingSocial";
 import WelcomeGate from "@/components/WelcomeGate";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -87,6 +89,8 @@ export default function RootLayout({
               <FloatingSocial />
             </WelcomeGate>
           </SmoothScrollProvider>
+          <Analytics />
+          <SpeedInsights />
         </ThemeProvider>
       </body>
     </html>
