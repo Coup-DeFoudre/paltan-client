@@ -173,9 +173,6 @@ export default async function AboutPage() {
                   <p className="font-semibold text-center text-lg text-amber-400">
                     (Honest, Inclusive, Local-first)
                   </p>
-                  <p className="text-center text-sm mt-2 text-slate-400">
-                    Format: Multilingual (Hindi + English)
-                  </p>
                 </div>
               </div>
             </div>

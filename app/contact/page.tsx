@@ -161,9 +161,9 @@ const ContactPage = () => {
                       </div>
                       <h3 className="text-xl font-bold text-white mb-4">फ़ोन</h3>
                       <div className="space-y-2">
-                        <p className="text-green-400 text-xl font-bold">1800-XXX-XXXX</p>
-                        <p className="text-slate-400 text-sm">सोमवार से शनिवार</p>
-                        <p className="text-slate-400 text-sm">सुबह 9:00 से शाम 6:00 बजे तक</p>
+                        <p className="text-green-400 text-xl font-bold">9009516622</p>
+                        <p className="text-slate-400 text-sm">रविवार</p>
+                        <p className="text-slate-400 text-sm">दोपहर 12:00 से शाम 6:00 बजे तक</p>
                       </div>
                     </div>
                   </PremiumCard>

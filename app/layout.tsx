@@ -7,6 +7,7 @@ import ScrollProgress from "@/components/ScrollProgress";
 import FloatingSocial from "@/components/FloatingSocial";
 import WelcomeGate from "@/components/WelcomeGate";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -61,7 +62,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="hi" className="scroll-smooth dark" suppressHydrationWarning>
+    <html lang="hi" className="dark" suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
       </head>
@@ -75,15 +76,17 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange={false}
         >
-          <WelcomeGate>
-            <ScrollProgress />
-            <AppBar />
-            <main className="pt-16 pb-20 lg:pt-16 lg:pb-0 min-h-screen">
-              {children}
-            </main>
-            <Footer />
-            <FloatingSocial />
-          </WelcomeGate>
+          <SmoothScrollProvider>
+            <WelcomeGate>
+              <ScrollProgress />
+              <AppBar />
+              <main className="pt-16 pb-20 lg:pt-16 lg:pb-0 min-h-screen">
+                {children}
+              </main>
+              <Footer />
+              <FloatingSocial />
+            </WelcomeGate>
+          </SmoothScrollProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -165,7 +165,7 @@ const VideoPageClient: React.FC<VideoPageClientProps> = ({ initialVideos, error 
                 transition={{ duration: 1, delay: 0.2 }}
               >
                 <span className="bg-gradient-to-r from-amber-300 via-orange-400 to-amber-500 bg-clip-text text-transparent drop-shadow-2xl">
-                  पलटन
+                  पल्टन
                 </span>
                 <br />
                 <span className="text-slate-200 text-4xl md:text-5xl lg:text-6xl font-light tracking-wider">

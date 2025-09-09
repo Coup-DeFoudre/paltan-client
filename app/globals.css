@@ -12,6 +12,11 @@
   -ms-overflow-style: none;
 }
 
+/* Smooth scrolling optimizations */
+html {
+  scroll-behavior: auto; /* Let Lenis handle smooth scrolling */
+}
+
 /* Thoughtful Dark Theme - Evoking Intelligence & Trust */
 html, body {
   overflow-x: hidden;
@@ -23,6 +28,9 @@ html, body {
   text-rendering: optimizeLegibility;
   background: linear-gradient(135deg, #1a1d29 0%, #16213e 100%);
   color: #e2e8f0;
+  /* Improve scroll performance */
+  will-change: scroll-position;
+  transform: translateZ(0);
 }
 
 /* Thoughtful Dark Theme Variables - Colors that Convey Depth & Intelligence */
@@ -597,5 +605,49 @@ h1, h2, h3, h4, h5, h6 {
   
   .text-overflow-fix {
     padding: 0 0.5rem;
+  }
+}
+
+/* Performance optimizations for smooth scrolling */
+* {
+  box-sizing: border-box;
+}
+
+/* Optimize transforms and animations */
+img, video, iframe {
+  will-change: auto;
+  transform: translateZ(0);
+}
+
+/* Optimize motion components */
+.motion-element {
+  backface-visibility: hidden;
+  perspective: 1000px;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Optimize carousel performance */
+.embla__container, .carousel-container {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.embla__slide {
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  /* Disable Lenis for reduced motion users */
+  html {
+    scroll-behavior: auto !important;
   }
 }

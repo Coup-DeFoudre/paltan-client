@@ -51,10 +51,14 @@ export default function EngagingCard({ article, index, variant = 'default' }: En
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6, delay: index * 0.1 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ 
+        duration: 0.6, 
+        delay: index * 0.1, 
+        ease: [0.25, 0.46, 0.45, 0.94] 
+      }}
       whileHover={{ y: -8 }}
-      className={`${cardVariants[variant]} flex-shrink-0`}
+      className={`${cardVariants[variant]} flex-shrink-0 motion-element`}
     >
       <div className="group relative h-full bg-slate-800/40 backdrop-blur-sm border border-slate-700/30 rounded-2xl overflow-hidden hover:bg-slate-700/50 hover:border-slate-600/50 transition-all duration-300 hover:shadow-2xl">
         <Link href={`/articles/${article.slug.current}`} className="block h-full">
@@ -69,6 +73,10 @@ export default function EngagingCard({ article, index, variant = 'default' }: En
               width={400}
               height={200}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+              loading="lazy"
+              placeholder="blur"
+              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+              style={{ willChange: 'transform' }}
             />
             
             {/* Overlay gradient */}
