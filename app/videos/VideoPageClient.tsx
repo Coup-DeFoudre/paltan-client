@@ -63,10 +63,21 @@ const getEmbedUrl = (url: string): string => {
   }
 };
 
+// Utility function to truncate text
+const truncateText = (text: string, wordLimit: number = 45) => {
+  const words = text.split(' ');
+  if (words.length <= wordLimit) return { text, needsExpansion: false };
+  
+  return {
+    text: words.slice(0, wordLimit).join(' '),
+    needsExpansion: true
+  };
+};
+
 const VideoPageClient: React.FC<VideoPageClientProps> = ({ initialVideos, error }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [videos, setVideos] = useState<Video[]>(initialVideos);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(new Set());
   const searchParams = useSearchParams();
 
   // Function to refresh videos
@@ -81,12 +92,27 @@ const VideoPageClient: React.FC<VideoPageClientProps> = ({ initialVideos, error 
     }
   };
 
+  // Functions to handle description expansion
+  const toggleDescription = (videoId: string) => {
+    const newExpanded = new Set(expandedDescriptions);
+    if (newExpanded.has(videoId)) {
+      newExpanded.delete(videoId);
+    } else {
+      newExpanded.add(videoId);
+    }
+    setExpandedDescriptions(newExpanded);
+  };
+
+  const isDescriptionExpanded = (videoId: string) => {
+    return expandedDescriptions.has(videoId);
+  };
+
   // Resolve focused video from URL (?focus=<id>) or default to first
   const focusedVideo = useMemo(() => {
     const id = searchParams?.get('focus');
     if (!id) return null;
-    return videos.find(v => v._id === id) || null;
-  }, [searchParams, videos]);
+    return initialVideos.find((v: Video) => v._id === id) || null;
+  }, [searchParams, initialVideos]);
 
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(
     focusedVideo ?? (initialVideos.length > 0 ? initialVideos[0] : null)
@@ -118,7 +144,7 @@ const VideoPageClient: React.FC<VideoPageClientProps> = ({ initialVideos, error 
     );
   }
 
-  if (videos.length === 0) {
+  if (initialVideos.length === 0) {
     return (
       <div className="min-h-screen relative">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"></div>
@@ -134,14 +160,12 @@ const VideoPageClient: React.FC<VideoPageClientProps> = ({ initialVideos, error 
   }
 
   // Get unique categories from videos
-  const categories = ["all", ...new Set(videos.map(video => video.category).filter(Boolean))];
+  const categories = ["all", ...new Set(initialVideos.map((video: Video) => video.category).filter(Boolean))];
 
   // Filter videos based on selected category
   const filteredVideos = selectedCategory === "all" 
-    ? videos 
-    : videos.filter(video => video.category === selectedCategory);
-
-  return (
+    ? initialVideos
+    : initialVideos.filter((video: Video) => video.category === selectedCategory);  return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Cinematic Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"></div>
@@ -231,7 +255,7 @@ const VideoPageClient: React.FC<VideoPageClientProps> = ({ initialVideos, error 
               
               <div className="relative bg-slate-900/60 backdrop-blur-xl p-3 rounded-2xl border border-slate-700/50 shadow-2xl">
                 <div className="flex flex-wrap justify-center gap-3">
-                  {categories.map((category, index) => (
+                  {categories.map((category: string, index: number) => (
                     <motion.button
                       key={category}
                       onClick={() => setSelectedCategory(category)}
@@ -344,14 +368,46 @@ const VideoPageClient: React.FC<VideoPageClientProps> = ({ initialVideos, error 
                         </motion.div>
                         
                         {/* Description */}
-                        <motion.p
+                        <motion.div
                           className="text-slate-300 leading-relaxed text-base"
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.6, delay: 1.9 }}
                         >
-                          {selectedVideo.description}
-                        </motion.p>
+                          {(() => {
+                            const { text: truncatedText, needsExpansion } = truncateText(selectedVideo.description);
+                            const isExpanded = isDescriptionExpanded(selectedVideo._id);
+                            const displayText = isExpanded ? selectedVideo.description : truncatedText;
+
+                            return (
+                              <div>
+                                <p className="mb-2">{displayText}</p>
+                                {needsExpansion && (
+                                  <button
+                                    onClick={() => toggleDescription(selectedVideo._id)}
+                                    className="text-amber-400 hover:text-amber-300 transition-colors duration-200 text-sm font-medium flex items-center gap-1"
+                                  >
+                                    {isExpanded ? (
+                                      <>
+                                        <span>कम दिखाएं</span>
+                                        <svg className="w-3 h-3 transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <span>और पढ़ें</span>
+                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                      </>
+                                    )}
+                                  </button>
+                                )}
+                              </div>
+                            );
+                          })()}
+                        </motion.div>
                         
                         {/* Decorative Bottom Line */}
                         <motion.div

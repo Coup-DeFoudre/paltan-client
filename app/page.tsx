@@ -36,7 +36,6 @@ export default async function Page() {
       client.fetch(activeNoticesQuery, {}, { cache: 'no-store' }),
       client.fetch(trendingArticlesQuery, {}, { cache: 'no-store' }),
       client.fetch(activeAdsQuery, {}, { cache: 'no-store' }),
-      // client.fetch(editorPicksQuery, {}, { cache: 'no-store' }),
       client.fetch(editorPickArticlesQuery, {}, { cache: 'no-store' }),
       client.fetch(featuresQuery, {}, { cache: 'no-store' }),
     ]);
