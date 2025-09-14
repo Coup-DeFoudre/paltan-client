@@ -426,6 +426,44 @@ export default function ArticleContent({ article, ads }: ArticleContentProps) {
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent"></div>
                   </motion.div>
                 )}
+
+                {/* Share Button at Bottom - Exact same as top button */}
+                <motion.div 
+                  className="mt-10 flex justify-center not-prose"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  viewport={{ once: true }}
+                >
+                  <button 
+                    onClick={handleShare}
+                    disabled={isSharing}
+                    className={`flex items-center space-x-2 px-6 py-3 rounded-2xl transition-all duration-300 shadow-lg ${
+                      shareSuccess
+                        ? 'bg-green-500 text-white shadow-green-500/30'
+                        : isSharing
+                        ? 'bg-slate-600 text-slate-300 cursor-not-allowed'
+                        : 'bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 shadow-amber-500/30'
+                    }`}
+                  >
+                    {shareSuccess ? (
+                      <>
+                        <Check className="w-5 h-5" />
+                        <span className="font-medium">कॉपी हो गया!</span>
+                      </>
+                    ) : isSharing ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-slate-300 border-t-transparent rounded-full animate-spin" />
+                        <span className="font-medium">शेयर हो रहा...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Share2 className="w-5 h-5" />
+                        <span className="font-medium">शेयर करें</span>
+                      </>
+                    )}
+                  </button>
+                </motion.div>
               </motion.section>
 
               {/* Footer Ads */}
