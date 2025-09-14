@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { Instagram, Youtube, Twitter, Mail } from 'lucide-react';
+import { Mail } from 'lucide-react';
+import { socialLinks } from '@/lib/socialLinks';
 
 export default function Footer() {
   return (
@@ -19,30 +20,20 @@ export default function Footer() {
             
             {/* Social Media Links */}
             <div className="flex space-x-4">
-              <a 
-                href="https://instagram.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="p-3 bg-slate-800/60 rounded-lg hover:bg-pink-600/20 hover:text-pink-400 transition-all duration-300 border border-slate-700/50"
-              >
-                <Instagram size={20} />
-              </a>
-              <a 
-                href="https://youtube.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="p-3 bg-slate-800/60 rounded-lg hover:bg-red-600/20 hover:text-red-400 transition-all duration-300 border border-slate-700/50"
-              >
-                <Youtube size={20} />
-              </a>
-              <a 
-                href="https://twitter.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="p-3 bg-slate-800/60 rounded-lg hover:bg-blue-600/20 hover:text-blue-400 transition-all duration-300 border border-slate-700/50"
-              >
-                <Twitter size={20} />
-              </a>
+              {socialLinks.map((link) => {
+                const IconComponent = link.icon;
+                return (
+                  <a 
+                    key={link.id}
+                    href={link.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className={`p-3 bg-slate-800/60 rounded-lg transition-all duration-300 border border-slate-700/50 ${link.color}`}
+                  >
+                    <IconComponent size={20} />
+                  </a>
+                );
+              })}
               <a 
                 href="mailto:thepaltann@gmail.com"
                 className="p-3 bg-slate-800/60 rounded-lg hover:bg-green-600/20 hover:text-green-400 transition-all duration-300 border border-slate-700/50"

@@ -52,13 +52,13 @@ const AppBar: React.FC = () => {
           <div className="flex items-center justify-between h-16">
             {/* Logo/Brand */}
             <div className="flex-shrink-0">
-              <Link href="/" className="flex items-center space-x-3">
+              <Link href="/" className="flex items-center space-x-2">
                 <Image 
                   src="/logo.png" 
                   alt="दी पल्टन Logo" 
-                  width={48}
-                  height={48}
-                  className="h-12 w-12 object-contain"
+                  width={56}
+                  height={56}
+                  className="h-14 w-14 object-cover rounded-sm"
                 />
                 <h1 className="text-2xl font-bold text-white hover:text-amber-400 transition-colors duration-300">द पल्टन</h1>
               </Link>
@@ -152,13 +152,13 @@ const AppBar: React.FC = () => {
       {/* Mobile Top Bar - Clean Design */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-[9999] bg-slate-900/95 backdrop-blur-md border-b border-slate-800/50 shadow-lg" style={{ position: 'fixed' }}>
         <div className="flex items-center justify-between px-4 h-16">
-          <Link href="/" className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center space-x-1">
             <Image 
               src="/logo.png" 
               alt="दी पल्टन Logo" 
-              width={40}
-              height={40}
-              className="h-10 w-10 object-contain"
+              width={60}
+              height={60}
+              className="h-14 w-14 object-cover rounded-sm"
             />
             <h1 className="text-xl font-bold text-white">द पल्टन</h1>
           </Link>
