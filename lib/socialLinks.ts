@@ -41,7 +41,7 @@ export const socialLinks: SocialLink[] = [
     id: 'twitter',
     icon: Twitter,
     label: 'Twitter',
-    url: 'https://twitter.com',
+    url: 'https://x.com/thepaltan_?t=AV8B33j9h5vLAAvAYn-1PQ&s=08',
     color: 'hover:bg-blue-500/20 hover:text-blue-400'
   }
 ];
