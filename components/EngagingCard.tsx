@@ -47,18 +47,21 @@ export default function EngagingCard({ article, index, variant = 'default' }: En
 
   const getRandomViews = () => Math.floor(Math.random() * 5000) + 500;
 
+  // Check if mobile
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
+      initial={{ opacity: 0, x: isMobile ? 30 : 0, y: isMobile ? 0 : 20 }}
+      whileInView={{ opacity: 1, x: 0, y: 0 }}
+      viewport={{ once: true, margin: isMobile ? "50px" : "-100px" }}
       transition={{ 
-        duration: 0.6, 
-        delay: index * 0.1, 
+        duration: isMobile ? 0.3 : 0.6, 
+        delay: isMobile ? index * 0.05 : index * 0.1, 
         ease: [0.25, 0.46, 0.45, 0.94] 
       }}
-      whileHover={{ y: -8 }}
-      className={`${cardVariants[variant]} flex-shrink-0 motion-element`}
+      whileHover={{ y: isMobile ? 0 : -8, scale: isMobile ? 1 : 1.02 }} // Scale on mobile instead of Y movement
+      className={`${cardVariants[variant]} flex-shrink-0 motion-element card-container`}
     >
       <div className="group relative h-full bg-slate-800/40 backdrop-blur-sm border border-slate-700/30 rounded-2xl overflow-hidden hover:bg-slate-700/50 hover:border-slate-600/50 transition-all duration-300 hover:shadow-2xl">
         <Link href={`/articles/${article.slug.current}`} className="block h-full">

@@ -113,7 +113,7 @@ export default function Footer() {
         <div className="border-t border-slate-700/50 mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-slate-400 text-sm mb-4 md:mb-0">
-              © द पल्टन, 2025-2026। सर्वाधिकार सुरक्षित।
+              © The Paltan, 2025-2026. All rights reserved.
             </div>
             <div className="text-slate-400 text-sm">
               Email: <a href="mailto:thepaltann@gmail.com" className="text-amber-400 hover:text-amber-300 transition-colors">thepaltann@gmail.com</a>

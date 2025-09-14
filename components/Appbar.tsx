@@ -47,7 +47,7 @@ const AppBar: React.FC = () => {
   return (
     <>
       {/* Desktop Navigation - Top */}
-      <nav className="hidden lg:flex fixed top-0 left-0 right-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800/50">
+      <nav className="hidden lg:flex fixed top-0 left-0 right-0 z-[9999] bg-slate-900/95 backdrop-blur-md border-b border-slate-800/50" style={{ position: 'fixed' }}>
         <div className="max-w-7xl mx-auto px-6 lg:px-8 w-full">
           <div className="flex items-center justify-between h-16">
             {/* Logo/Brand */}
@@ -115,8 +115,16 @@ const AppBar: React.FC = () => {
       </nav>
 
       {/* Mobile Navigation - App-like Bottom Tab Bar */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-md border-t border-slate-700 shadow-2xl">
-        <div className="flex items-center justify-around px-1 py-2 safe-area-inset-bottom">
+      <nav 
+        className="lg:hidden fixed bottom-0 left-0 right-0 z-[9999] border-t border-slate-700 shadow-2xl pb-safe m-0" 
+        style={{ 
+          margin: 0, 
+          backgroundColor: 'rgb(15 23 42)',
+          backgroundImage: 'none',
+          backdropFilter: 'none'
+        }}
+      >
+        <div className="flex items-center justify-around px-1 py-4 m-0" style={{ backgroundColor: 'rgb(15 23 42)' }}>
           {bottomNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -142,7 +150,7 @@ const AppBar: React.FC = () => {
       </nav>
 
       {/* Mobile Top Bar - Clean Design */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800/50">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-[9999] bg-slate-900/95 backdrop-blur-md border-b border-slate-800/50 shadow-lg" style={{ position: 'fixed' }}>
         <div className="flex items-center justify-between px-4 h-16">
           <Link href="/" className="flex items-center space-x-2">
             <Image 

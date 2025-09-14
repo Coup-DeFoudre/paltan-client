@@ -26,6 +26,7 @@ export const trendingArticlesQuery = groq`
     slug,
     publishedAt,
     excerpt,
+    author,
     coverImage {
       asset->{
         url

@@ -74,12 +74,12 @@ export default function EngagingHomepage({
         </ErrorBoundary>
 
         {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-4 md:py-6 lg:py-8">
           
           {/* Hero Trending Section */}
           <ErrorBoundary>
-            <section className="mb-12 sm:mb-16">
-              <div className="flex items-center gap-3 mb-8">
+            <section className="mb-8 sm:mb-12 md:mb-16">
+              <div className="flex items-center gap-3 mb-6 sm:mb-8">
                 <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-red-500" />
                 <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white">
                   Trending Now
@@ -164,8 +164,8 @@ export default function EngagingHomepage({
 
           {/* Editor's Picks - Featured Layout with Enhanced Error Handling */}
           <ErrorBoundary>
-            <section className="mb-12 sm:mb-16">
-              <div className="flex items-center gap-3 mb-8">
+            <section className="mb-8 sm:mb-12 md:mb-16">
+              <div className="flex items-center gap-3 mb-6 sm:mb-8">
                 <Star className="w-5 h-5 md:w-6 md:h-6 text-amber-500" />
                 <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white">
                   Editor&apos;s Choice
@@ -311,16 +311,27 @@ export default function EngagingHomepage({
                       )}
                       
                       {/* Mobile View All */}
-                      <div className="md:hidden w-60 h-80 flex-shrink-0 flex items-center justify-center">
+                      <motion.div 
+                        className="md:hidden w-60 h-80 flex-shrink-0 flex items-center justify-center"
+                        initial={{ opacity: 0, x: 50, scaleX: 0.9 }}
+                        whileInView={{ opacity: 1, x: 0, scaleX: 1 }}
+                        viewport={{ once: true, margin: "0px" }}
+                        transition={{ 
+                          duration: 0.4,
+                          delay: 0,
+                          ease: [0.25, 0.46, 0.45, 0.94]
+                        }}
+                      >
                         <Link 
                           href={`/category/${category.key}`}
-                          className="flex flex-col items-center justify-center w-full h-full bg-slate-800/30 hover:bg-slate-700/50 border border-slate-600/30 rounded-2xl transition-all duration-300 group hover:scale-105"
+                          className="flex flex-col items-center justify-center w-full h-full bg-gradient-to-r from-transparent to-slate-800/20 hover:to-slate-700/40 transition-all duration-300 group relative overflow-hidden"
                         >
+                          <div className="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-500/50 to-transparent"></div>
                           <ArrowRight size={32} className="text-slate-400 group-hover:text-amber-400 mb-4 group-hover:translate-x-2 transition-all" />
                           <span className="text-slate-400 group-hover:text-amber-400 text-lg font-medium transition-colors">View All</span>
                           <span className="text-slate-500 group-hover:text-slate-400 text-sm mt-2 transition-colors text-center">{category.titleHindi}</span>
                         </Link>
-                      </div>
+                      </motion.div>
                     </div>
                   </div>
                 </section>

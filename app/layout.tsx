@@ -7,7 +7,6 @@ import ScrollProgress from "@/components/ScrollProgress";
 import FloatingSocial from "@/components/FloatingSocial";
 import WelcomeGate from "@/components/WelcomeGate";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
@@ -72,23 +71,24 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${notoSansDevanagari.variable} ${inter.variable} ${poppins.variable} antialiased`}
         suppressHydrationWarning={true}
       >
+        {/* Fixed Elements - Outside of scroll container */}
+        <AppBar />
+        <ScrollProgress />
+        <FloatingSocial />
+        
+        {/* Scrollable Content */}
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
           enableSystem={false}
           disableTransitionOnChange={false}
         >
-          <SmoothScrollProvider>
-            <WelcomeGate>
-              <ScrollProgress />
-              <AppBar />
-              <main className="pt-16 pb-20 lg:pt-16 lg:pb-0 min-h-screen">
-                {children}
-              </main>
-              <Footer />
-              <FloatingSocial />
-            </WelcomeGate>
-          </SmoothScrollProvider>
+          <WelcomeGate>
+            <main className="pt-16 pb-32 lg:pt-16 lg:pb-0 min-h-screen">
+              {children}
+            </main>
+            <Footer />
+          </WelcomeGate>
           <Analytics />
           <SpeedInsights />
         </ThemeProvider>

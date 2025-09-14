@@ -47,7 +47,7 @@ export default function FloatingSocial() {
   ];
 
   return (
-    <div className="fixed bottom-24 lg:bottom-8 right-4 z-40">
+    <div className="fixed bottom-32 lg:bottom-8 right-4 z-40">
       <div className="flex flex-col items-end space-y-3">
         
         {/* Social Links */}
