@@ -133,8 +133,8 @@ export default function ArticleContent({ article, ads }: ArticleContentProps) {
   const articleText = getArticleText(article.body);
   const readingTime = calculateReadingTime(articleText);
 
-
   // Share functionality using native Web Share API
+  // Now relies on Open Graph meta tags for image previews
   const handleShare = async () => {
     if (isSharing) return;
     

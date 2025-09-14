@@ -1,14 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Noto_Sans_Devanagari, Inter, Poppins } from "next/font/google";
 import "./globals.css";
-import AppBar from "@/components/Appbar";
-import Footer from "@/components/Footer";
-import ScrollProgress from "@/components/ScrollProgress";
-import FloatingSocial from "@/components/FloatingSocial";
 import WelcomeGate from "@/components/WelcomeGate";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import ConditionalLayout from "../components/ConditionalLayout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,8 +43,61 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "द पल्टन - Digital News Platform",
+  metadataBase: new URL(process.env.VERCEL_URL 
+    ? `https://${process.env.VERCEL_URL}` 
+    : process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
+  title: {
+    default: "द पल्टन - Digital News Platform",
+    template: "%s | द पल्टन"
+  },
   description: "Modern Hindi news platform with multimedia content",
+  keywords: ["hindi news", "news", "भारत", "समाचार", "पल्टन", "digital news"],
+  authors: [{ name: "द पल्टन" }],
+  creator: "द पल्टन",
+  publisher: "द पल्टन",
+  openGraph: {
+    type: 'website',
+    locale: 'hi_IN',
+    url: '/',
+    siteName: 'द पल्टन',
+    title: 'द पल्टन - Digital News Platform',
+    description: 'Modern Hindi news platform with multimedia content',
+    images: [
+      {
+        url: '/logo.png', // metadataBase will make this absolute
+        width: 1200,
+        height: 630,
+        alt: 'द पल्टन Logo',
+      }
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@PaltanNews',
+    creator: '@PaltanNews',
+    title: 'द पल्टन - Digital News Platform',
+    description: 'Modern Hindi news platform with multimedia content',
+    images: ['/logo.png'], // metadataBase will make this absolute
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: 'your-google-verification-code',
+  },
+  icons: {
+    icon: '/logo.png',
+    shortcut: '/logo.png',
+    apple: '/logo.png',
+  },
 };
 
 export const viewport = {
@@ -66,17 +116,15 @@ export default function RootLayout({
     <html lang="hi" className="dark" suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
+        <meta name="theme-color" content="#0f172a" />
+        <meta name="application-name" content="द पल्टन" />
+        <link rel="icon" href="/logo.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/logo.png" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${notoSansDevanagari.variable} ${inter.variable} ${poppins.variable} antialiased`}
         suppressHydrationWarning={true}
       >
-        {/* Fixed Elements - Outside of scroll container */}
-        <AppBar />
-        <ScrollProgress />
-        <FloatingSocial />
-        
-        {/* Scrollable Content */}
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
@@ -84,10 +132,9 @@ export default function RootLayout({
           disableTransitionOnChange={false}
         >
           <WelcomeGate>
-            <main className="pt-16 pb-32 lg:pt-16 lg:pb-0 min-h-screen">
+            <ConditionalLayout>
               {children}
-            </main>
-            <Footer />
+            </ConditionalLayout>
           </WelcomeGate>
           <Analytics />
           <SpeedInsights />
