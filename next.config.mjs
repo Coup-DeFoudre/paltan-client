@@ -1,5 +1,11 @@
+/**
+ * @fileoverview Next.js configuration for Paltan Client
+ * @description Optimized configuration for performance and SEO
+ */
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Image optimization with specific trusted domains
   images: {
     remotePatterns: [
       {
@@ -28,11 +34,22 @@ const nextConfig = {
         pathname: '**',
       }
     ],
-    dangerouslyAllowSVG: true,
+    // Optimize images for better performance
     formats: ['image/webp', 'image/avif'],
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 60,
   },
+  
+  // Enable compression
+  compress: true,
+  
+  // Remove deprecated options - swcMinify and optimizeFonts are defaults in Next.js 15
+  
+  // Optimize build
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'framer-motion'],
+  },
+  
+  // TypeScript and ESLint settings
   typescript: {
     ignoreBuildErrors: false,
   },

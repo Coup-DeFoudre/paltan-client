@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Engaging homepage component with trending content
+ * @description Main homepage layout with trending articles, videos, and interactive elements
+ */
+
 'use client';
 
 import React from 'react';
@@ -13,6 +18,10 @@ import VideosSectionHome from './VideosSectionHome';
 import ErrorBoundary from './ErrorBoundary';
 import { Article, Ad, Notice } from './homepage/types';
 
+/**
+ * Video interface for homepage video content
+ * @interface Video
+ */
 interface Video {
   _id: string;
   title: string;
@@ -25,6 +34,10 @@ interface Video {
   views: number;
 }
 
+/**
+ * Props interface for EngagingHomepage component
+ * @interface EngagingHomepageProps
+ */
 interface EngagingHomepageProps {
   notices: Notice[];
   trendingArticles: Article[];

@@ -1,7 +1,16 @@
+/**
+ * @fileoverview Footer component for Paltan Client
+ * @description Website footer with brand information, navigation links, and social media
+ */
+
 import Link from 'next/link';
 import { Mail } from 'lucide-react';
 import { socialLinks } from '@/lib/socialLinks';
 
+/**
+ * Footer component that displays brand information, navigation, and social links
+ * @returns {React.ReactElement} The rendered footer section
+ */
 export default function Footer() {
   return (
     <footer className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white border-t border-slate-700/50">

@@ -370,14 +370,6 @@ export const eventBySlugQuery = groq`
   }
 `;
 
-// Simple Submission Settings Query
-export const submissionSettingsQuery = groq`
-  *[_type == "submissionSettings"][0] {
-    googleSheetsUrl,
-    isActive
-  }
-`;
-
 // Testimonials Queries
 export const testimonialsQuery = groq`
   *[_type == "testimonial" && !(_id in path("drafts.**")) && defined(publishedAt)] | order(publishedAt desc) {

@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Article content renderer with enhanced link formatting
+ * @description Renders Sanity portable text with custom styled components
+ * @version 2.0 - Enhanced with beautiful link formatting
+ * @author Paltan Development Team
+ */
+
 'use client';
 
 import Image from 'next/image';
@@ -12,6 +19,9 @@ import ReadingProgress from './ReadingProgress';
 import { calculateReadingTime, formatReadingTime } from '@/lib/readingTime';
 import { useState } from 'react';
 
+/**
+ * Interface for advertisement data
+ */
 interface Ad {
   _id: string;
   title: string;
@@ -22,6 +32,9 @@ interface Ad {
   duration: string;
 }
 
+/**
+ * Interface for article data from Sanity
+ */
 interface Article {
   title: string;
   body: PortableTextBlock[];
@@ -32,6 +45,9 @@ interface Article {
   author?: string;
 }
 
+/**
+ * Props for ArticleContent component
+ */
 interface ArticleContentProps {
   article: Article;
   ads: {
@@ -60,6 +76,35 @@ function urlFor(source: ImageSource) {
   }
 }
 
+// Custom Link Component for PortableText
+const CustomLink = ({ children, value }: { children: React.ReactNode, value?: { href?: string } }) => {
+  const href = value?.href || '';
+  const isExternal = href.startsWith('http') || href.startsWith('https');
+
+  if (isExternal) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 hover:text-blue-800 underline decoration-solid decoration-blue-600 hover:decoration-blue-800 transition-colors duration-200"
+      >
+        {children}
+      </a>
+    );
+  }
+
+  // Internal link
+  return (
+    <Link 
+      href={href}
+      className="text-blue-600 hover:text-blue-800 underline decoration-solid decoration-blue-600 hover:decoration-blue-800 transition-colors duration-200"
+    >
+      {children}
+    </Link>
+  );
+};
+
 const portableTextComponents: PortableTextComponents = {
   types: {
     image: ({ value }) =>
@@ -85,6 +130,20 @@ const portableTextComponents: PortableTextComponents = {
         </motion.div>
       ) : null,
   },
+  marks: {
+    link: CustomLink,
+    strong: ({ children }) => (
+      <strong className="font-bold text-amber-200">{children}</strong>
+    ),
+    em: ({ children }) => (
+      <em className="italic text-slate-200">{children}</em>
+    ),
+    code: ({ children }) => (
+      <code className="px-2 py-1 bg-slate-800 text-amber-300 rounded border border-slate-600 font-mono text-sm">
+        {children}
+      </code>
+    ),
+  },
   block: {
     h1: ({ children }) => (
       <h1 className="text-3xl md:text-4xl font-bold text-slate-100 mb-6 mt-8 leading-tight">
@@ -105,6 +164,37 @@ const portableTextComponents: PortableTextComponents = {
       <p className="text-slate-300 leading-relaxed mb-6 text-lg">
         {children}
       </p>
+    ),
+    blockquote: ({ children }) => (
+      <motion.blockquote 
+        className="border-l-4 border-amber-500 bg-slate-800/50 pl-6 py-4 my-8 italic text-slate-200 rounded-r-lg"
+        initial={{ opacity: 0, x: -20 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6 }}
+        viewport={{ once: true }}
+      >
+        {children}
+      </motion.blockquote>
+    ),
+  },
+  list: {
+    bullet: ({ children }) => (
+      <ul className="list-disc list-inside mb-6 text-slate-300 space-y-2">
+        {children}
+      </ul>
+    ),
+    number: ({ children }) => (
+      <ol className="list-decimal list-inside mb-6 text-slate-300 space-y-2">
+        {children}
+      </ol>
+    ),
+  },
+  listItem: {
+    bullet: ({ children }) => (
+      <li className="text-slate-300 leading-relaxed">{children}</li>
+    ),
+    number: ({ children }) => (
+      <li className="text-slate-300 leading-relaxed">{children}</li>
     ),
   },
 };

@@ -5,12 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Send, CheckCircle, AlertCircle, Paperclip, ArrowLeft, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 
-interface SubmissionsPageClientProps {
-  googleSheetsUrl: string | null;
-  notificationEmail: string | null;
-}
-
-export default function SubmissionsPageClient({ googleSheetsUrl }: SubmissionsPageClientProps) {
+export default function SubmissionsPageClient() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -62,47 +57,49 @@ export default function SubmissionsPageClient({ googleSheetsUrl }: SubmissionsPa
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateForm() || !googleSheetsUrl) return;
+    if (!validateForm()) return;
     
     setShowConfirmation(true);
   };
 
   const confirmSubmission = async () => {
-    if (!googleSheetsUrl) return;
-
     setIsSubmitting(true);
     setShowConfirmation(false);
 
     try {
       const submissionData = {
-        timestamp: new Date().toLocaleString('hi-IN'),
         title: formData.title,
         description: formData.description,
         reporterName: formData.reporterName,
         contact: formData.contact,
-        driveLink: formData.driveLink || 'कोई अटैचमेंट नहीं',
-        status: 'नया सबमिशन'
+        driveLink: formData.driveLink || null,
       };
 
-      await fetch(googleSheetsUrl, {
+      const response = await fetch('/api/submissions', {
         method: 'POST',
-        mode: 'no-cors',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(submissionData),
       });
 
-      setSubmitStatus('success');
-      setStatusMessage('धन्यवाद! आपका सबमिशन प्राप्त हो गया है। हमारी टीम जल्द ही आपसे संपर्क करेगी।');
-      
-      setFormData({
-        title: '',
-        description: '',
-        reporterName: '',
-        contact: '',
-        driveLink: ''
-      });
+      const result = await response.json();
+
+      if (result.success) {
+        setSubmitStatus('success');
+        setStatusMessage(result.message || 'धन्यवाद! आपका सबमिशन प्राप्त हो गया है। हमारी टीम जल्द ही आपसे संपर्क करेगी।');
+        
+        setFormData({
+          title: '',
+          description: '',
+          reporterName: '',
+          contact: '',
+          driveLink: ''
+        });
+      } else {
+        setSubmitStatus('error');
+        setStatusMessage(result.error || 'सबमिशन भेजने में त्रुटि हुई। कृपया दोबारा कोशिश करें।');
+      }
 
     } catch (error) {
       console.error('Submission error:', error);
@@ -110,6 +107,7 @@ export default function SubmissionsPageClient({ googleSheetsUrl }: SubmissionsPa
       setStatusMessage('कुछ गलत हुआ। कृपया दोबारा कोशिश करें।');
     } finally {
       setIsSubmitting(false);
+      setTimeout(() => setSubmitStatus('idle'), 5000);
     }
   };
 
@@ -289,23 +287,12 @@ export default function SubmissionsPageClient({ googleSheetsUrl }: SubmissionsPa
 
                 <button
                   type="submit"
-                  disabled={isSubmitting || !googleSheetsUrl}
+                  disabled={isSubmitting}
                   className="w-full flex items-center justify-center gap-3 px-8 py-4 bg-green-500 hover:bg-green-600 disabled:bg-green-500/50 text-slate-900 rounded-lg font-bold text-lg transition-colors"
                 >
                   <Send className="w-6 h-6" />
                   {isSubmitting ? 'भेजा जा रहा है...' : 'सबमिशन भेजें'}
                 </button>
-
-                {!googleSheetsUrl && (
-                  <div className="text-center p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg">
-                    <p className="text-amber-400">
-                      सबमिशन सेवा अस्थायी रूप से अनुपलब्ध है। कृपया बाद में दोबारा कोशिश करें।
-                    </p>
-                    <p className="text-slate-400 text-sm mt-2">
-                      तत्काल सहायता के लिए हमसे संपर्क करें: thepaltann@gmail.com
-                    </p>
-                  </div>
-                )}
               </form>
             </motion.div>
           )}

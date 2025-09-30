@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Category section component with article display
+ * @description Displays articles for a specific category with theming support
+ */
+
 'use client';
 
 import React from 'react';
@@ -8,6 +13,10 @@ import PremiumCard from './PremiumCard';
 // import GradientText from './GradientText';
 import { Article } from './homepage/types';
 
+/**
+ * Props interface for CategorySection component
+ * @interface CategorySectionProps
+ */
 interface CategorySectionProps {
   title: string;
   titleHindi?: string;
@@ -31,7 +40,12 @@ interface CategorySectionProps {
   };
 }
 
-export default function CategorySection({
+/**
+ * Category section component optimized with React.memo
+ * @param {CategorySectionProps} props - Component props
+ * @returns {React.ReactElement} Rendered category section
+ */
+const CategorySection: React.FC<CategorySectionProps> = ({
   title,
   titleHindi,
   // subtitle, // Currently unused but part of the interface for future use
@@ -41,7 +55,7 @@ export default function CategorySection({
   // icon = '📰',
   gradientColor = 'amber',
   // themeColor // Currently unused but part of the interface for future use
-}: CategorySectionProps) {
+}: CategorySectionProps) => {
   
   const formatArticleDate = (dateString: string) => {
     if (!dateString) return '';
@@ -161,4 +175,7 @@ export default function CategorySection({
 
     </section>
   );
-}
+};
+
+// Memoize component for performance optimization
+export default React.memo(CategorySection);

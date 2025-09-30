@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Root layout component for Paltan Client
+ * @description Main layout with metadata, fonts, and global providers
+ * @version 1.0
+ * @author Paltan Development Team
+ */
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Noto_Sans_Devanagari, Inter, Poppins } from "next/font/google";
 import "./globals.css";
@@ -7,6 +14,10 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import ConditionalLayout from "../components/ConditionalLayout";
 
+/**
+ * Font configuration for optimal rendering
+ * Uses system fonts with Devanagari support for Hindi content
+ */
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -17,7 +28,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// Enhanced Hindi font configuration matching Naidunia's approach
+// Enhanced Hindi font configuration matching professional news sites
 const notoSansDevanagari = Noto_Sans_Devanagari({
   variable: "--font-hindi",
   subsets: ["devanagari"],
@@ -26,7 +37,7 @@ const notoSansDevanagari = Noto_Sans_Devanagari({
   preload: true,
 });
 
-// Inter font for better English text rendering (similar to what Naidunia uses)
+// Inter font for better English text rendering
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
@@ -94,9 +105,22 @@ export const metadata: Metadata = {
     google: 'your-google-verification-code',
   },
   icons: {
-    icon: '/logo.png',
+    icon: [
+      { url: '/logo.png' },
+      { url: '/logo.png', sizes: '32x32', type: 'image/png' },
+      { url: '/logo.png', sizes: '16x16', type: 'image/png' }
+    ],
     shortcut: '/logo.png',
-    apple: '/logo.png',
+    apple: [
+      { url: '/logo.png' },
+      { url: '/logo.png', sizes: '180x180', type: 'image/png' }
+    ],
+    other: [
+      {
+        rel: 'apple-touch-icon-precomposed',
+        url: '/logo.png',
+      },
+    ],
   },
 };
 

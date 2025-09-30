@@ -1,3 +1,8 @@
+/**
+ * @fileoverview Application navigation bar component
+ * @description Responsive navigation bar with search functionality and mobile menu
+ */
+
 "use client"
 import React, { useState } from 'react';
 import { Home, Play, Info, Phone, Menu, X, Rss, Search } from 'lucide-react';
@@ -5,7 +10,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 
-
+/**
+ * Navigation item interface
+ * @interface NavItem
+ * @property {string} id - Unique identifier for the navigation item
+ * @property {string} label - Display text for the navigation item
+ * @property {React.ElementType} icon - Lucide icon component for the navigation item
+ * @property {string} href - URL path for the navigation item
+ */
 interface NavItem {
   id: string;
   label: string;
@@ -13,6 +25,10 @@ interface NavItem {
   href: string;
 }
 
+/**
+ * Application navigation bar component with responsive design and search functionality
+ * @returns {React.ReactElement} The rendered navigation bar
+ */
 const AppBar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState<boolean>(false);

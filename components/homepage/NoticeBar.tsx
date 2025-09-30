@@ -28,7 +28,7 @@ const NoticeBar: React.FC<NoticeBarProps> = ({ notices }) => {
             <span key={notice._id} className="mx-6 flex items-center text-sm font-medium">
               <span className="bg-gradient-to-r from-red-500 to-pink-500 rounded-full w-2 h-2 mr-3 animate-pulse shadow-lg"></span>
               <span className="bg-gradient-to-r from-red-500 to-orange-500 rounded px-2 py-1 text-xs mr-3 font-semibold shadow-md">
-                घोषणा
+                मुख्य खबरें
               </span>
               <span className="drop-shadow-sm">{notice.message}</span>
             </span>

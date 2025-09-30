@@ -1,30 +1,11 @@
-import { client } from '@/lib/sanity';
-import { submissionSettingsQuery } from '@/lib/queries';
 import SubmissionsPageClient from './SubmissionsPageClient';
 
 // Revalidate every 60 seconds
 export const revalidate = 60;
 
 export default async function SubmissionsPage() {
-  try {
-    const submissionSettings = await client.fetch(submissionSettingsQuery, {}, { cache: 'no-store' });
-
-    return (
-      <SubmissionsPageClient 
-        googleSheetsUrl={submissionSettings?.googleSheetsUrl || null}
-        notificationEmail={submissionSettings?.notificationEmail || null}
-      />
-    );
-  } catch (error) {
-    console.error('Error fetching submission settings:', error);
-    
-    return (
-      <SubmissionsPageClient 
-        googleSheetsUrl={null}
-        notificationEmail={null}
-      />
-    );
-  }
+  // No longer need to fetch Google Sheets settings since we're using email
+  return <SubmissionsPageClient />;
 }
 
 export async function generateMetadata() {

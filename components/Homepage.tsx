@@ -1,7 +1,10 @@
+/**
+ * @fileoverview Homepage component for Paltan Client
+ * @description Main homepage component that displays notices, trending articles, editor picks, and categorized content
+ */
+
 // components/HomePage.tsx
 'use client';
-
-// import { useState } from 'react';
 
 // Import component types
 import { Article, Ad, Notice, EditorPick, Feature, Video } from './homepage/types';
@@ -15,6 +18,18 @@ import CategorySection from './CategorySection';
 import AdSection from './homepage/AdSection';
 import FeaturesSection from './FeaturesSection';
 
+/**
+ * Props interface for the Homepage component
+ * @interface HomePageProps
+ * @property {Notice[]} notices - Array of active notices to display
+ * @property {Article[]} trendingArticles - Array of trending articles for carousel
+ * @property {EditorPick[]} editorPicks - Array of editor's picked content
+ * @property {Article[]} editorPickArticles - Array of articles from editor picks
+ * @property {Feature[]} features - Array of featured content items
+ * @property {Object.<string, Article[]>} categoryArticles - Articles organized by category
+ * @property {Object.<string, Video[]>} categoryVideos - Videos organized by category
+ * @property {Ad[]} ads - Array of advertisements to display
+ */
 interface HomePageProps {
   notices: Notice[];
   trendingArticles: Article[];
@@ -26,6 +41,11 @@ interface HomePageProps {
   ads: Ad[];
 }
 
+/**
+ * Homepage component that renders the main landing page
+ * @param {HomePageProps} props - The props for the homepage component
+ * @returns {React.ReactElement} The rendered homepage with all sections
+ */
 const HomePage: React.FC<HomePageProps> = ({ 
   notices, 
   trendingArticles, 
