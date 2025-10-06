@@ -36,17 +36,39 @@ async function getContactSettings() {
   }
 }
 
-// Send email using Nodemailer (SMTP)
+// Send email using Nodemailer (SMTP) - Fixed for Gmail SSL issues
 async function sendEmailWithNodemailer(config: ContactSettings, submissionData: Record<string, unknown>) {
-  const transporter = nodemailer.createTransport({
-    host: config.smtpConfig.host,
-    port: config.smtpConfig.port,
-    secure: config.smtpConfig.secure,
-    auth: {
-      user: config.smtpConfig.user,
-      pass: config.smtpConfig.pass,
-    },
-  });
+  // Check if it's Gmail and use optimized settings
+  const isGmail = config.smtpConfig.host.includes('gmail');
+  
+  let transporterConfig;
+  
+  if (isGmail) {
+    // Use Gmail service for better compatibility
+    transporterConfig = {
+      service: 'gmail',
+      auth: {
+        user: config.smtpConfig.user,
+        pass: config.smtpConfig.pass,
+      },
+    };
+  } else {
+    // Use custom SMTP settings with better SSL handling
+    transporterConfig = {
+      host: config.smtpConfig.host,
+      port: config.smtpConfig.port,
+      secure: config.smtpConfig.port === 465, // true for 465, false for other ports
+      auth: {
+        user: config.smtpConfig.user,
+        pass: config.smtpConfig.pass,
+      },
+      tls: {
+        rejectUnauthorized: false
+      }
+    };
+  }
+
+  const transporter = nodemailer.createTransport(transporterConfig);
 
   const mailOptions = {
     from: config.smtpConfig.user,
@@ -238,11 +260,13 @@ async function sendEmailWithResend(config: ContactSettings, submissionData: Reco
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
+    console.log('📝 Submission form received');
     const body = await request.json();
     const { title, description, reporterName, contact, driveLink } = body;
 
     // Validate required fields
     if (!title || !description || !reporterName || !contact) {
+      console.log('❌ Validation failed: Missing required fields');
       return NextResponse.json(
         { success: false, error: 'सभी आवश्यक फील्ड भरना अनिवार्य है' },
         { status: 400 }
@@ -250,9 +274,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     // Get contact settings from Sanity (reusing contact settings for submissions)
+    console.log('📝 Fetching submission settings...');
     const settings = await getContactSettings();
     
     if (!settings || !settings.isActive) {
+      console.log('❌ Settings not active or not found');
       return NextResponse.json(
         { success: false, error: 'सबमिशन सेवा वर्तमान में उपलब्ध नहीं है' },
         { status: 503 }
@@ -260,12 +286,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     if (!settings.recipientEmail) {
+      console.log('❌ Recipient email not configured');
       return NextResponse.json(
         { success: false, error: 'ईमेल सेटिंग्स कॉन्फ़िगर नहीं हैं' },
         { status: 500 }
       );
     }
 
+    console.log('📝 Email service:', settings.emailService);
     const submissionData = { 
       title, 
       description, 
@@ -275,21 +303,31 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     };
 
     // Send email based on configured service
-    switch (settings.emailService) {
-      case 'nodemailer':
-        await sendEmailWithNodemailer(settings, submissionData);
-        break;
-      case 'sendgrid':
-        await sendEmailWithSendGrid(settings, submissionData);
-        break;
-      case 'resend':
-        await sendEmailWithResend(settings, submissionData);
-        break;
-      default:
-        return NextResponse.json(
-          { success: false, error: 'असमर्थित ईमेल सेवा' },
-          { status: 500 }
-        );
+    try {
+      switch (settings.emailService) {
+        case 'nodemailer':
+          console.log('📝 Using nodemailer/SMTP...');
+          await sendEmailWithNodemailer(settings, submissionData);
+          break;
+        case 'sendgrid':
+          console.log('📝 Using SendGrid...');
+          await sendEmailWithSendGrid(settings, submissionData);
+          break;
+        case 'resend':
+          console.log('📝 Using Resend...');
+          await sendEmailWithResend(settings, submissionData);
+          break;
+        default:
+          console.log('❌ Unsupported email service:', settings.emailService);
+          return NextResponse.json(
+            { success: false, error: 'असमर्थित ईमेल सेवा' },
+            { status: 500 }
+          );
+      }
+      console.log('✅ Submission email sent successfully!');
+    } catch (emailError) {
+      console.error('❌ Submission email sending failed:', emailError);
+      throw emailError;
     }
 
     return NextResponse.json({
@@ -298,7 +336,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     });
 
   } catch (error) {
-    console.error('Submission error:', error);
+    console.error('❌ Submission error:', error);
     return NextResponse.json(
       { success: false, error: 'सबमिशन भेजने में त्रुटि हुई। कृपया दोबारा कोशिश करें।' },
       { status: 500 }
