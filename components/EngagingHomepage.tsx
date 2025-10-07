@@ -7,7 +7,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { TrendingUp, Star, Eye, ArrowRight } from 'lucide-react';
+import { TrendingUp, Star, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import ModernCarousel from './ModernCarousel';
@@ -31,7 +31,6 @@ interface Video {
   embedUrl: string;
   category: string;
   publishedAt: string;
-  views: number;
 }
 
 /**
@@ -135,10 +134,6 @@ export default function EngagingHomepage({
                             <div className="flex flex-wrap items-center gap-2 mb-2 md:mb-4">
                               <div className="bg-red-500 text-white px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-bold">
                                 Trending
-                              </div>
-                              <div className="flex items-center gap-1 text-white/80 text-xs md:text-sm">
-                                <Eye size={12} className="md:w-4 md:h-4" />
-                                <span>{Math.floor(Math.random() * 10000) + 1000} views</span>
                               </div>
                             </div>
                             

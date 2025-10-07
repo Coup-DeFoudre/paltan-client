@@ -400,10 +400,6 @@ export default function SearchResults() {
                                 <span>{result.category}</span>
                               </div>
 
-                              {result.views && (
-                                <span>{result.views.toLocaleString()} देखा गया</span>
-                              )}
-
                               {result.venue && (
                                 <span>{result.venue.city}, {result.venue.state}</span>
                               )}

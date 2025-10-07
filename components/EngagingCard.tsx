@@ -4,7 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Clock, TrendingUp, Star, Eye } from 'lucide-react';
+import { Clock, TrendingUp, Star } from 'lucide-react';
 
 interface Article {
   _id: string;
@@ -44,8 +44,6 @@ export default function EngagingCard({ article, index, variant = 'default' }: En
     featured: "w-full h-96 lg:h-[500px]",
     trending: "w-80 h-80"
   };
-
-  const getRandomViews = () => Math.floor(Math.random() * 5000) + 500;
 
   // Check if mobile
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
@@ -99,14 +97,6 @@ export default function EngagingCard({ article, index, variant = 'default' }: En
                   <span>Pick</span>
                 </div>
               )}
-            </div>
-
-            {/* Reading stats */}
-            <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm px-2 py-1 rounded-full">
-              <div className="flex items-center gap-1 text-white text-xs">
-                <Eye size={10} />
-                <span>{getRandomViews()}</span>
-              </div>
             </div>
           </div>
 

@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Play, Eye, ArrowRight, Clock } from 'lucide-react';
+import { Play, ArrowRight, Clock } from 'lucide-react';
 import PremiumCard from './PremiumCard';
 
 interface Video {
@@ -15,7 +15,6 @@ interface Video {
   embedUrl: string;
   category: string;
   publishedAt: string;
-  views: number;
 }
 
 interface VideosSectionHomeProps {
@@ -51,13 +50,6 @@ export default function VideosSectionHome({ videos }: VideosSectionHomeProps) {
     } catch {
       return 'कुछ समय पहले';
     }
-  };
-
-  const getDuration = (): string => {
-    // You could implement actual duration calculation here
-    // For now, using random durations for demo
-    const durations = ['2:15', '5:42', '8:30', '3:45', '6:20', '4:10'];
-    return durations[Math.floor(Math.random() * durations.length)];
   };
 
   // Enhanced error handling and fallback state
@@ -126,11 +118,6 @@ export default function VideosSectionHome({ videos }: VideosSectionHomeProps) {
                       <Play className="w-6 h-6 text-slate-900 ml-1" fill="currentColor" />
                     </div>
                   </div>
-                  
-                  {/* Duration Badge */}
-                  <div className="absolute bottom-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-xs font-medium">
-                    {getDuration()}
-                  </div>
                 </div>
                 
                 <div className="flex-grow">
@@ -146,10 +133,6 @@ export default function VideosSectionHome({ videos }: VideosSectionHomeProps) {
                 
                 <div className="flex items-center justify-between text-xs text-slate-500 mt-auto">
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-1">
-                      <Eye className="w-3 h-3" />
-                      <span>{video.views || 0} views</span>
-                    </div>
                     <div className="flex items-center gap-1">
                       <Clock className="w-3 h-3" />
                       <span>{formatDate(video.publishedAt)}</span>
