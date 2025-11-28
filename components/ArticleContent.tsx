@@ -18,6 +18,7 @@ import Link from 'next/link';
 import ReadingProgress from './ReadingProgress';
 import { calculateReadingTime, formatReadingTime } from '@/lib/readingTime';
 import { useState } from 'react';
+import RelatedPosts from './RelatedPosts';
 
 /**
  * Interface for advertisement data
@@ -46,6 +47,22 @@ interface Article {
 }
 
 /**
+ * Interface for related article data
+ */
+interface RelatedArticle {
+  _id: string;
+  title: string;
+  slug: { current: string };
+  publishedAt: string;
+  excerpt?: string;
+  category?: string;
+  subcategory?: string;
+  author?: string;
+  coverImage?: ImageSource;
+  tags?: string[];
+}
+
+/**
  * Props for ArticleContent component
  */
 interface ArticleContentProps {
@@ -55,6 +72,7 @@ interface ArticleContentProps {
     sideAds: Ad[];
     footerAds: Ad[];
   };
+  relatedArticles?: RelatedArticle[];
 }
 
 const builder = imageUrlBuilder(client);
@@ -199,7 +217,7 @@ const portableTextComponents: PortableTextComponents = {
   },
 };
 
-export default function ArticleContent({ article, ads }: ArticleContentProps) {
+export default function ArticleContent({ article, ads, relatedArticles = [] }: ArticleContentProps) {
   const { topAds, sideAds, footerAds } = ads;
   const [isSharing, setIsSharing] = useState(false);
   const [shareSuccess, setShareSuccess] = useState(false);
@@ -555,6 +573,11 @@ export default function ArticleContent({ article, ads }: ArticleContentProps) {
                   </button>
                 </motion.div>
               </motion.section>
+
+              {/* Related Posts Section */}
+              {relatedArticles && relatedArticles.length > 0 && (
+                <RelatedPosts articles={relatedArticles} />
+              )}
 
               {/* Footer Ads */}
               {footerAds.length > 0 && (

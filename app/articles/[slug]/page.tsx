@@ -1,5 +1,5 @@
 import { client } from '@/lib/sanity';
-import { articleBySlugQuery, activeAdsQuery } from '@/lib/queries';
+import { articleBySlugQuery, activeAdsQuery, relatedArticlesQuery } from '@/lib/queries';
 import { notFound } from 'next/navigation';
 import ArticleContent from '@/components/ArticleContent';
 import { Metadata } from 'next';
@@ -144,6 +144,18 @@ export default async function ArticlePage({ params }: Props) {
       return notFound();
     }
 
+    // Fetch related articles based on category, subcategory, and tags
+    const relatedArticles = await client.fetch(
+      relatedArticlesQuery,
+      {
+        currentArticleId: article._id,
+        category: article.category || '',
+        subcategory: article.subcategory || '',
+        tags: article.tags || []
+      },
+      { cache: 'no-store' }
+    );
+
     // Filter ads for different article placements
     const filteredAds = {
       topAds: (ads || []).filter((ad: Ad) => ad.placements?.includes('article-top')),
@@ -152,7 +164,7 @@ export default async function ArticlePage({ params }: Props) {
     };
 
     // Render the client component with data
-    return <ArticleContent article={article} ads={filteredAds} />;
+    return <ArticleContent article={article} ads={filteredAds} relatedArticles={relatedArticles} />;
   } catch (error) {
     console.error('Error fetching article:', error);
     return notFound();

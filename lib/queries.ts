@@ -208,7 +208,8 @@ export const articleBySlugQuery = `
     subcategory,
     isTrending,
     author,
-    excerpt
+    excerpt,
+    tags
   }
 `;
 
@@ -513,5 +514,44 @@ export const popularSearchesQuery = groq`
   *[_type == "searchAnalytics"] | order(count desc) [0...10] {
     searchTerm,
     count
+  }
+`;
+
+// Related Articles Query - finds similar articles based on category, subcategory, and tags
+export const relatedArticlesQuery = groq`
+  *[
+    _type == "article" && 
+    !(_id in path("drafts.**")) && 
+    _id != $currentArticleId &&
+    defined(slug.current) && 
+    defined(publishedAt) &&
+    (
+      category == $category ||
+      subcategory == $subcategory ||
+      count((tags[])[@ in $tags]) > 0
+    )
+  ] | order(
+    select(
+      category == $category => 3,
+      subcategory == $subcategory => 2,
+      count((tags[])[@ in $tags]) > 0 => 1,
+      0
+    ) desc,
+    publishedAt desc
+  ) [0...6] {
+    _id,
+    title,
+    slug,
+    publishedAt,
+    excerpt,
+    category,
+    subcategory,
+    author,
+    coverImage {
+      asset -> {
+        url
+      }
+    },
+    tags
   }
 `;
