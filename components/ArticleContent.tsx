@@ -8,8 +8,7 @@
 'use client';
 
 import Image from 'next/image';
-import { PortableText, PortableTextComponents } from '@portabletext/react';
-import type { PortableTextBlock } from 'sanity';
+import { PortableText, PortableTextComponents, PortableTextBlock } from '@portabletext/react';
 import imageUrlBuilder from '@sanity/image-url';
 import { client } from '@/lib/sanity';
 import { motion } from 'framer-motion';
@@ -39,8 +38,8 @@ interface Ad {
 interface Article {
   title: string;
   body: PortableTextBlock[];
-  mainImage?: { asset: { url: string } };
-  coverImage?: { asset: { url: string } };
+  mainImage?: { asset: { url: string }; caption?: string; alt?: string };
+  coverImage?: { asset: { url: string }; caption?: string; alt?: string };
   excerpt?: string;
   publishedAt: string;
   author?: string;
@@ -85,10 +84,23 @@ interface ImageSource {
 
 // Removed unused interfaces
 
+// URL builder for content images - preserves aspect ratio without cropping
 function urlFor(source: ImageSource) {
   if (!source?.asset) return '';
   try {
-    return builder.image(source).width(800).height(450).fit('crop').url();
+    // Use fit('max') to preserve original aspect ratio without cropping
+    return builder.image(source).width(900).fit('max').auto('format').url();
+  } catch {
+    return source.asset.url || '';
+  }
+}
+
+// URL builder for cover images - optimized for display
+function urlForCover(source: ImageSource) {
+  if (!source?.asset) return '';
+  try {
+    // Use fit('max') for cover images to preserve aspect ratio
+    return builder.image(source).width(1200).fit('max').auto('format').url();
   } catch {
     return source.asset.url || '';
   }
@@ -134,12 +146,12 @@ const portableTextComponents: PortableTextComponents = {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <Image
+          {/* Use unoptimized to preserve original aspect ratio for inline images */}
+          <img
             src={urlFor(value) || value.asset.url}
             alt={value.alt || 'लेख छवि'}
-            width={800}
-            height={450}
-            className="w-full h-auto object-cover"
+            className="w-full h-auto object-contain max-h-[600px]"
+            loading="lazy"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.src = '/placeholder-video.svg';
@@ -394,18 +406,26 @@ export default function ArticleContent({ article, ads, relatedArticles = [] }: A
               >
                 {/* Hero Image - Show mainImage first, then coverImage as fallback */}
                 {article.mainImage?.asset?.url && (
-                  <div className="relative aspect-video rounded-3xl overflow-hidden shadow-2xl mb-8 border border-slate-700/50">
-                    <Image
-                      src={urlFor(article.mainImage) || article.mainImage.asset.url}
-                      alt={article.title}
-                      fill
-                      className="object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = '/placeholder-video.svg';
-                      }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent"></div>
+                  <div className="mb-8">
+                    <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-slate-700/50 bg-slate-800">
+                      {/* Image displays at natural aspect ratio, fills width */}
+                      <img
+                        src={urlForCover(article.mainImage) || article.mainImage.asset.url}
+                        alt={article.mainImage.alt || article.title}
+                        className="w-full h-auto block"
+                        loading="eager"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = '/placeholder-video.svg';
+                        }}
+                      />
+                    </div>
+                    {/* Caption if provided */}
+                    {article.mainImage.caption && (
+                      <p className="text-center text-slate-400 text-sm mt-3 italic px-4">
+                        {article.mainImage.caption}
+                      </p>
+                    )}
                   </div>
                 )}
 
@@ -515,23 +535,31 @@ export default function ArticleContent({ article, ads, relatedArticles = [] }: A
                 {/* Cover Image at the bottom - Show if no mainImage was shown at top */}
                 {article.coverImage?.asset?.url && !article.mainImage?.asset?.url && (
                   <motion.div 
-                    className="mt-12 relative aspect-video rounded-3xl overflow-hidden shadow-2xl border border-slate-700/50"
+                    className="mt-12"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
                     viewport={{ once: true }}
                   >
-                    <Image
-                      src={urlFor(article.coverImage) || article.coverImage.asset.url}
-                      alt={article.title}
-                      fill
-                      className="object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = '/placeholder-video.svg';
-                      }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent"></div>
+                    <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-slate-700/50 bg-slate-800">
+                      {/* Image displays at natural aspect ratio, fills width */}
+                      <img
+                        src={urlForCover(article.coverImage) || article.coverImage.asset.url}
+                        alt={article.coverImage.alt || article.title}
+                        className="w-full h-auto block"
+                        loading="lazy"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = '/placeholder-video.svg';
+                        }}
+                      />
+                    </div>
+                    {/* Caption if provided */}
+                    {article.coverImage.caption && (
+                      <p className="text-center text-slate-400 text-sm mt-3 italic px-4">
+                        {article.coverImage.caption}
+                      </p>
+                    )}
                   </motion.div>
                 )}
 

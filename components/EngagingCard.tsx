@@ -26,62 +26,59 @@ interface EngagingCardProps {
 }
 
 export default function EngagingCard({ article, index, variant = 'default' }: EngagingCardProps) {
+  // SSR-safe date formatting - always return consistent format to avoid hydration mismatch
   const formatArticleDate = (dateString: string) => {
     if (!dateString) return '';
     const date = new Date(dateString);
-    const now = new Date();
     if (isNaN(date.getTime())) return '';
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    if (diffInHours < 1) return 'अभी';
-    if (diffInHours < 24) return `${diffInHours} घंटे पहले`;
-    const days = Math.floor(diffInHours / 24);
-    if (days <= 2) return `${days} दिन पहले`;
+    // Always use DD-MM-YYYY format for SSR consistency
     return `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth()+1).toString().padStart(2, '0')}-${date.getFullYear()}`;
   };
 
+  // Card size variants - increased height to fit more text
   const cardVariants = {
-    default: "w-80 h-80",
-    featured: "w-full h-96 lg:h-[500px]",
-    trending: "w-80 h-80"
+    default: "w-80 h-[340px]",
+    featured: "w-full h-[420px] lg:h-[520px]",
+    trending: "w-80 h-[340px]"
   };
 
-  // Check if mobile
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  // Image height based on variant
+  const imageHeight = variant === 'featured' ? 'h-44 lg:h-56' : 'h-36';
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: isMobile ? 30 : 0, y: isMobile ? 0 : 20 }}
-      whileInView={{ opacity: 1, x: 0, y: 0 }}
-      viewport={{ once: true, margin: isMobile ? "50px" : "-100px" }}
+      // SSR-safe animation - no Y movement to prevent scroll issues on mobile
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true, margin: "-50px" }}
       transition={{ 
-        duration: isMobile ? 0.3 : 0.6, 
-        delay: isMobile ? index * 0.05 : index * 0.1, 
+        duration: 0.4, 
+        delay: Math.min(index * 0.06, 0.3), 
         ease: [0.25, 0.46, 0.45, 0.94] 
       }}
-      whileHover={{ y: isMobile ? 0 : -8, scale: isMobile ? 1 : 1.02 }} // Scale on mobile instead of Y movement
-      className={`${cardVariants[variant]} flex-shrink-0 motion-element card-container`}
+      // Scale-only hover to avoid vertical movement
+      whileHover={{ scale: 1.02 }}
+      className={`${cardVariants[variant]} flex-shrink-0`}
+      style={{ touchAction: 'auto' }} // Allow both horizontal and vertical touch to pass through
     >
       <div className="group relative h-full bg-slate-800/40 backdrop-blur-sm border border-slate-700/30 rounded-2xl overflow-hidden hover:bg-slate-700/50 hover:border-slate-600/50 transition-all duration-300 hover:shadow-2xl">
-        <Link href={`/articles/${article.slug.current}`} className="block h-full">
+        <Link href={`/articles/${article.slug.current}`} className="block h-full flex flex-col">
           
-          {/* Image Section */}
-          <div className={`relative overflow-hidden ${
-            variant === 'featured' ? 'h-48 lg:h-64' : 'h-40'
-          }`}>
+          {/* Image Section - reduced height */}
+          <div className={`relative overflow-hidden flex-shrink-0 ${imageHeight}`}>
             <Image
               src={article.coverImage?.asset?.url || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&h=200&fit=crop'}
               alt={article.title}
               width={400}
               height={200}
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               loading="lazy"
               placeholder="blur"
               blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-              style={{ willChange: 'transform' }}
             />
             
             {/* Overlay gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
             
             {/* Status badges */}
             <div className="absolute top-3 left-3 flex gap-2">
@@ -100,46 +97,61 @@ export default function EngagingCard({ article, index, variant = 'default' }: En
             </div>
           </div>
 
-          {/* Content Section */}
-          <div className={`p-4 flex flex-col ${
-            variant === 'featured' 
-              ? 'lg:p-6' 
-              : ''
-          }`} style={{ 
-            height: variant === 'featured' 
-              ? 'calc(100% - 192px)' 
-              : 'calc(100% - 160px)' 
-          }}>
-            <h3 className={`font-bold text-white mb-3 line-clamp-2 leading-tight group-hover:text-amber-400 transition-colors ${
-              variant === 'featured' ? 'text-lg lg:text-xl' : 'text-sm'
-            }`}>
+          {/* Content Section - flex-grow to fill remaining space */}
+          <div className={`p-4 flex flex-col flex-grow min-h-0 ${
+            variant === 'featured' ? 'lg:p-5' : ''
+          }`}>
+            {/* Title with proper Hindi text rendering */}
+            <h3 
+              className={`font-semibold text-white group-hover:text-amber-400 transition-colors mb-2 ${
+                variant === 'featured' ? 'text-base lg:text-lg' : 'text-sm'
+              }`}
+              style={{ 
+                display: '-webkit-box',
+                WebkitLineClamp: variant === 'featured' ? 3 : 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+                lineHeight: '1.7', // Extra height for Hindi matras (ी, ो, ु, ू)
+                minHeight: variant === 'featured' ? '5.1em' : '3.4em' // 1.7 * 3 or 1.7 * 2
+              }}
+            >
               {article.title}
             </h3>
             
-            <div className="flex-grow mb-3">
+            {/* Excerpt */}
+            <div className="flex-grow min-h-0 mb-2">
               {article.excerpt && (
-                <p className={`text-slate-400 line-clamp-2 leading-relaxed ${
-                  variant === 'featured' ? 'text-sm lg:text-base' : 'text-xs'
-                }`}>
+                <p 
+                  className={`text-slate-400 ${
+                    variant === 'featured' ? 'text-sm' : 'text-xs'
+                  }`}
+                  style={{ 
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                    lineHeight: '1.5'
+                  }}
+                >
                   {article.excerpt}
                 </p>
               )}
             </div>
             
-            {/* Footer */}
-            <div className="flex items-center justify-between mt-auto pt-2 border-t border-slate-700/30">
+            {/* Footer - always at bottom */}
+            <div className="flex items-center justify-between pt-2 border-t border-slate-700/30 mt-auto">
               <div className="flex items-center gap-1 text-xs text-slate-500">
-                <Clock className="w-3 h-3" />
+                <Clock className="w-3 h-3 flex-shrink-0" />
                 <span>{formatArticleDate(article.publishedAt)}</span>
               </div>
-              <div className="text-xs text-slate-500 truncate max-w-20">
+              <div className="text-xs text-slate-500 truncate max-w-24">
                 {article.author}
               </div>
             </div>
           </div>
 
           {/* Hover effect overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
         </Link>
       </div>
     </motion.div>

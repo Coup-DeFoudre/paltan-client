@@ -19,11 +19,21 @@ interface ImageSource {
 function urlFor(source: ImageSource) {
   if (!source?.asset) return '';
   try {
-    return builder.image(source).width(1200).height(630).fit('crop').url();
+    // Use builder to get optimized image URL for OG sharing
+    const url = builder.image(source).width(1200).height(630).fit('crop').auto('format').url();
+    return url || source.asset.url || '';
   } catch {
     return source.asset.url || '';
   }
 }
+
+// Get production base URL for fallback images
+const getProductionBaseUrl = () => {
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL;
+  }
+  return 'https://thepaltann.vercel.app';
+};
 
 interface Ad {
   _id: string;
@@ -67,16 +77,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const baseUrl = `${protocol}://${host}`;
     const currentUrl = `${baseUrl}/articles/${slug}`;
 
-    // Get the primary image URL (mainImage first, then coverImage)
+    // Get the primary image URL (coverImage first as it's more commonly used, then mainImage)
     const getImageUrl = () => {
-      if (article.mainImage?.asset?.url) {
-        const optimizedUrl = urlFor(article.mainImage);
-        return optimizedUrl || article.mainImage.asset.url;
-      } else if (article.coverImage?.asset?.url) {
+      // Try coverImage first (most common)
+      if (article.coverImage?.asset) {
         const optimizedUrl = urlFor(article.coverImage);
-        return optimizedUrl || article.coverImage.asset.url;
+        if (optimizedUrl) return optimizedUrl;
+        if (article.coverImage.asset.url) return article.coverImage.asset.url;
       }
-      return `${baseUrl}/logo.png`; // fallback to site logo with full URL
+      // Try mainImage as fallback
+      if (article.mainImage?.asset) {
+        const optimizedUrl = urlFor(article.mainImage);
+        if (optimizedUrl) return optimizedUrl;
+        if (article.mainImage.asset.url) return article.mainImage.asset.url;
+      }
+      // Final fallback to site logo with absolute URL
+      return `${getProductionBaseUrl()}/logo.png`;
     };
 
     const imageUrl = getImageUrl();

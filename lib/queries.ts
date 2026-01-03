@@ -200,7 +200,9 @@ export const articleBySlugQuery = `
     title,
     slug,
     coverImage {
-      asset->{url}
+      asset->{url},
+      caption,
+      alt
     },
     publishedAt,
     body,

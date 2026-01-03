@@ -8,7 +8,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Noto_Sans_Devanagari, Inter, Poppins } from "next/font/google";
 import "./globals.css";
-import WelcomeGate from "@/components/WelcomeGate";
+import CookieConsent from "@/components/CookieConsent";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -53,10 +53,21 @@ const poppins = Poppins({
   preload: true,
 });
 
+// Production URL for OG metadata
+const getBaseUrl = () => {
+  // Use explicit site URL if set
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL;
+  }
+  // Use Vercel production URL
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  return 'https://thepaltann.vercel.app';
+};
+
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.VERCEL_URL 
-    ? `https://${process.env.VERCEL_URL}` 
-    : process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
+  metadataBase: new URL(getBaseUrl()),
   title: {
     default: "द पल्टन - Digital News Platform",
     template: "%s | द पल्टन"
@@ -155,11 +166,10 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange={false}
         >
-          <WelcomeGate>
-            <ConditionalLayout>
-              {children}
-            </ConditionalLayout>
-          </WelcomeGate>
+          <ConditionalLayout>
+            {children}
+          </ConditionalLayout>
+          <CookieConsent />
           <Analytics />
           <SpeedInsights />
         </ThemeProvider>

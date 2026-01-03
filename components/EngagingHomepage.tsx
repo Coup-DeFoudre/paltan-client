@@ -137,12 +137,30 @@ export default function EngagingHomepage({
                               </div>
                             </div>
                             
-                            <h3 className="text-base sm:text-lg md:text-3xl lg:text-4xl font-bold text-white mb-2 md:mb-4 leading-tight line-clamp-2 md:line-clamp-3">
+                            <h3 
+                              className="text-base sm:text-lg md:text-3xl lg:text-4xl font-bold text-white mb-2 md:mb-4"
+                              style={{
+                                display: '-webkit-box',
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                                lineHeight: '1.5' // Proper height for Hindi matras
+                              }}
+                            >
                               {article.title || 'शीर्षक उपलब्ध नहीं'}
                             </h3>
                             
                             {article.excerpt && (
-                              <p className="text-white/90 text-sm md:text-lg mb-2 md:mb-4 line-clamp-1 md:line-clamp-2 leading-relaxed">
+                              <p 
+                                className="text-white/90 text-sm md:text-lg mb-2 md:mb-4"
+                                style={{
+                                  display: '-webkit-box',
+                                  WebkitLineClamp: 2,
+                                  WebkitBoxOrient: 'vertical',
+                                  overflow: 'hidden',
+                                  lineHeight: '1.6'
+                                }}
+                              >
                                 {article.excerpt}
                               </p>
                             )}
@@ -185,7 +203,7 @@ export default function EngagingHomepage({
                 <>
                   {/* Mobile: Horizontal scroll, Desktop: Grid */}
                   <div className="block md:hidden">
-                    <div className="overflow-x-auto scrollbar-hide">
+                    <div className="overflow-x-auto scrollbar-hide overscroll-x-contain" style={{ touchAction: 'pan-x pan-y' }}>
                       <div className="flex gap-4 pb-4" style={{ width: 'max-content' }}>
                         {editorPickArticles.slice(0, 4).map((article, index) => (
                           <EngagingCard key={article._id} article={article} index={index} variant="default" />
@@ -295,7 +313,7 @@ export default function EngagingHomepage({
                   </div>
 
                   {/* Horizontal scrolling articles */}
-                  <div className="overflow-x-auto scrollbar-hide">
+                  <div className="overflow-x-auto scrollbar-hide overscroll-x-contain" style={{ touchAction: 'pan-x pan-y' }}>
                     <div className="flex gap-4 sm:gap-6 pb-4" style={{ width: 'max-content' }}>
                       {hasArticles ? (
                         articles.slice(0, 5).map((article, index) => (

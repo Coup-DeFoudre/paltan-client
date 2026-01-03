@@ -2,8 +2,8 @@ import { client } from '@/lib/sanity';
 import { allVideosQuery } from '@/lib/queries';
 import VideoPageClient from './VideoPageClient';
 
-// Revalidate every 30 seconds to ensure fresh video data
-export const revalidate = 30;
+// Force dynamic rendering - this page uses useSearchParams
+export const dynamic = 'force-dynamic';
 
 export default async function VideosPage() {
   try {
