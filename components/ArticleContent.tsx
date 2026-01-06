@@ -176,19 +176,24 @@ const portableTextComponents: PortableTextComponents = {
   },
   block: {
     h1: ({ children }) => (
-      <h1 className="text-3xl md:text-4xl font-bold text-slate-100 mb-6 mt-8 leading-tight">
+      <h1 className="text-3xl md:text-4xl font-bold mb-6 mt-8 leading-tight bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 bg-clip-text text-transparent">
         {children}
       </h1>
     ),
     h2: ({ children }) => (
-      <h2 className="text-2xl md:text-3xl font-bold text-slate-200 mb-5 mt-7 leading-tight">
+      <h2 className="text-2xl md:text-3xl font-bold mb-5 mt-7 leading-tight bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
         {children}
       </h2>
     ),
     h3: ({ children }) => (
-      <h3 className="text-xl md:text-2xl font-semibold text-slate-200 mb-4 mt-6 leading-tight">
+      <h3 className="text-xl md:text-2xl font-semibold mb-4 mt-6 leading-tight text-amber-400">
         {children}
       </h3>
+    ),
+    h4: ({ children }) => (
+      <h4 className="text-lg md:text-xl font-semibold mb-3 mt-5 leading-tight text-amber-300">
+        {children}
+      </h4>
     ),
     normal: ({ children }) => (
       <p className="text-slate-300 leading-relaxed mb-6 text-lg">
